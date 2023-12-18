@@ -1,0 +1,10 @@
+src/static
+.idea
+.code
+venv
+__pycache__
+*.psd
+*.db
+test.py
+config.yaml
+*.log
