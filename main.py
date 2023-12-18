@@ -26,11 +26,12 @@ class MyClient(botpy.Client):
             message_text = message_text.replace("/bind", "")
             message_text = message_text.replace(" ", "")
             if not message_text:
-                await message.reply(content=f"机器人{self.robot.name}发现你要绑定的用户名是空的")
+                await message.reply(content=f"{self.robot.name}发现你要绑定的用户名是空的")
                 return
             update_or_insert_user(message.author.id, message_text)
             await message.reply(
-                content=f"[{message_text}]已经绑定到你的频道号了，以后只需要发送/b50就可以就可以生成b50成绩图了")
+                content=f"[{message_text}]已经绑定到你的频道号了")
+            return
 
         if "/b50" in message.content:
             message_text = message.content.split(">")[1]
@@ -41,16 +42,23 @@ class MyClient(botpy.Client):
                 img, code = await generate50(message.author.id, message.author.avatar, params)
             except Exception as e:
                 _log.error(e)
-                await message.reply(content=f"机器人{self.robot.name}发现你的b50查询出现了一些问题")
+                await message.reply(content=f"{self.robot.name}发现你的b50查询出现了一些问题")
                 return
             if img:
                 if code == 200 or code == 201:
                     if code == 201:
-                        await message.reply(content=f"机器人{self.robot.name}发现你的b50分数距离上次查询没有变化")
+                        await message.reply(content=f"{self.robot.name}发现你的b50分数距离上次查询没有变化")
                     await message.reply(file_image=img)
                 else:
-                    await message.reply(content=img)
-
+                    await message.reply(content=f"{self.robot.name}发现{img}")
+            return
+        message_text = message.content.split(">")[1]
+        message_text = message_text.replace(" ", "")
+        if not message_text:
+            msg = (f"帮助文档\n欢迎使用{self.robot.name}\n/bind + 用户名: 绑定水鱼查分器用户名 参数: 水鱼用户名\n/b50 + 参数: 查询b50分数 参数: n:显示乐曲标题("
+                   f"可选)\nTips: 在聊天栏中输入 / 可快速唤起机器人，点击\"/b50\"可快速完成输入")
+            await message.reply(content=msg)
+            return
 
 if __name__ == "__main__":
     # 通过预设置的类型，设置需要监听的事件通道

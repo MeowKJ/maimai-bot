@@ -1,5 +1,5 @@
 from src.draw.draw import draw
-from src.draw.db import get_user_name_by_id, get_user_score, updata_user_score
+from src.draw.db import get_user_name_by_id, get_user_score, update_user_score
 import aiohttp
 import os
 
@@ -24,7 +24,7 @@ async def generate50(userid, avatar, params, pic_path="./src/static/mai/images")
             if get_user_score(userid) == obj['rating']:
                 if os.path.exists(os.path.join(pic_path, f"{username}.png")):
                     return os.path.join(pic_path, f"{username}.png"), 201
-            updata_user_score(userid, obj['rating'])
+            update_user_score(userid, obj['rating'])
         pic = await draw(payload['username'], avatar, obj, is_draw_title="n" in params)
 
         return pic, 200
