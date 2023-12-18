@@ -55,17 +55,14 @@ class MyClient(botpy.Client):
         message_text = message.content.split(">")[1]
         message_text = message_text.replace(" ", "")
         if not message_text:
-            msg = (f"帮助文档\n欢迎使用{self.robot.name}\n/bind + 用户名: 绑定水鱼查分器用户名 参数: 水鱼用户名\n/b50 + 参数: 查询b50分数 参数: n:显示乐曲标题("
-                   f"可选)\nTips: 在聊天栏中输入 / 可快速唤起机器人，点击\"/b50\"可快速完成输入")
+            msg = (
+                f"帮助文档\n欢迎使用{self.robot.name}\n/bind + 用户名: 绑定水鱼查分器用户名 参数: 水鱼用户名\n/b50 + 参数: 查询b50分数 参数: n:显示乐曲标题("
+                f"可选)\nTips: 在聊天栏中输入 / 可快速唤起机器人，点击\"/b50\"可快速完成输入")
             await message.reply(content=msg)
             return
 
-if __name__ == "__main__":
-    # 通过预设置的类型，设置需要监听的事件通道
-    # intents = botpy.Intents.none()
-    # intents.public_guild_messages=True
 
-    # 通过kwargs，设置需要监听的事件通道
+if __name__ == "__main__":
     intents = botpy.Intents(public_guild_messages=True)
     client = MyClient(intents=intents)
     client.run(appid=test_config["appid"], secret=test_config["secret"])

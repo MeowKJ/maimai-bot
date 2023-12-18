@@ -1,9 +1,7 @@
 import os
 import random
+import textwrap
 from datetime import datetime
-from typing import Callable
-
-from PIL import Image, ImageFont, ImageDraw, ImageFilter
 
 from src.draw.util import *
 
@@ -67,7 +65,10 @@ def draw_songs(songs, main_img, is_b15, is_draw_title):
         if rate != "":
             rate_img_path = f'./src/static/mai/song/rank/{rate}.png'
             rate_img = Image.open(rate_img_path)
-            rate_img = rate_img.resize((60, 32))
+            target_height = 32
+            aspect_ratio = rate_img.width / rate_img.height
+            target_width = int(target_height * aspect_ratio)
+            rate_img = rate_img.resize((target_width, target_height))
             base_img.paste(rate_img, (10, 210), rate_img)
         font_achievements = ImageFont.truetype('./src/static/font/BungeeInline-Regular.ttf', 20)
         draw_base.text((75, 215), "{:.4f}".format(achievements), font=font_achievements, fill=(255, 255, 255),
@@ -163,38 +164,6 @@ async def draw_plate(main_img, avatar, name, rating):
     main_img.paste(plate_img, (120, 75), plate_img)
 
 
-def draw_hr(main_img):
-    # 画hr
-    hr_img = Image.open(f'./src/static/mai/img/swirl.png')
-    main_img.paste(hr_img, (0, 950), hr_img)
-
-
-def get_color_code2(score):
-    if score < 1000:
-        return 255, 255, 255  # 白色
-    elif score < 2000:
-        return 0, 0, 255  # 蓝色
-    elif score < 4000:
-        return 0, 128, 0  # 绿色
-    elif score < 7000:
-        return 255, 255, 0  # 黄色
-    elif score < 10000:
-        return 255, 0, 0  # 红色
-    elif score < 12000:
-        return 128, 0, 128  # 紫色
-    elif score < 13000:
-        return 184, 115, 51  # 青铜色
-    elif score < 14000:
-        return 192, 192, 192  # 银色
-    elif score < 14500:
-        return 255, 215, 0  # 金色
-    elif score < 15000:
-        return 229, 228, 226  # 白金色
-    else:
-        # 彩虹渐变效果
-        return 0, 0, 0
-
-
 def draw_score_nv(main_img, b15_scores, b35_scores):
     x = 130
     y = 35
@@ -219,31 +188,6 @@ def draw_score_nv(main_img, b15_scores, b35_scores):
         draw_text(draw_f, (x + 270, y), f"B35 -> {b35_scores}", get_color_code2(b35_scores_q), font_path,
                   font_size)
     main_img.paste(nv_img, (315, 290), nv_img)
-
-
-def draw_text(_draw, position, text, fill, font_path, font_size):
-    font = ImageFont.truetype(font_path, font_size)
-    _draw.text(position, text, font=font, fill=fill)
-
-
-def draw_rainbow_text(img, position, text, font_path, font_size):
-    font = ImageFont.truetype(font_path, font_size)
-    word = text
-    word_position = position
-    # 文字区域的box坐标
-    word_box = font.getbbox(word)
-    # 渐变颜色效果图片
-    font_gradient_file_path = "./src/static/mai/img/gradient.png"
-
-    # 生成文字区域的alpha图片
-    font_gradient_im = Image.open(font_gradient_file_path)
-    font_gradient_im = font_gradient_im.resize((word_box[2] - word_box[0], word_box[3] - word_box[1]))
-    font_alpha = Image.new('L', font_gradient_im.size)
-    font_alpha_d = ImageDraw.Draw(font_alpha)
-    font_alpha_d.text((0, 0), word, fill='White', anchor="lt", font=font)
-    font_gradient_im.putalpha(font_alpha)
-
-    img.paste(font_gradient_im, word_position, font_gradient_im)
 
 
 def draw_footer(main_img, b15, b35):

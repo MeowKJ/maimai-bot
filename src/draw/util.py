@@ -1,11 +1,35 @@
-import textwrap
 from io import BytesIO
 
 import aiohttp
-from PIL import ImageDraw
-from PIL import Image
+from PIL import ImageDraw, ImageFont, Image
 
 pic_path = "./src/static/mai/images"
+
+
+def get_color_code2(score):
+    if score < 1000:
+        return 255, 255, 255  # 白色
+    elif score < 2000:
+        return 0, 0, 255  # 蓝色
+    elif score < 4000:
+        return 0, 128, 0  # 绿色
+    elif score < 7000:
+        return 255, 255, 0  # 黄色
+    elif score < 10000:
+        return 255, 0, 0  # 红色
+    elif score < 12000:
+        return 128, 0, 128  # 紫色
+    elif score < 13000:
+        return 184, 115, 51  # 青铜色
+    elif score < 14000:
+        return 91, 140, 170  # 银色
+    elif score < 14500:
+        return 255, 215, 0  # 金色
+    elif score < 15000:
+        return 229, 228, 226  # 白金色
+    else:
+        # 彩虹渐变效果
+        return 0, 0, 0
 
 
 def get_color_code(dx_rating):
@@ -31,6 +55,31 @@ def get_color_code(dx_rating):
         return '09'
     else:
         return '10'
+
+
+def draw_text(_draw, position, text, fill, font_path, font_size):
+    font = ImageFont.truetype(font_path, font_size)
+    _draw.text(position, text, font=font, fill=fill)
+
+
+def draw_rainbow_text(img, position, text, font_path, font_size):
+    font = ImageFont.truetype(font_path, font_size)
+    word = text
+    word_position = position
+    # 文字区域的box坐标
+    word_box = font.getbbox(word)
+    # 渐变颜色效果图片
+    font_gradient_file_path = "./src/static/mai/img/gradient.png"
+
+    # 生成文字区域的alpha图片
+    font_gradient_im = Image.open(font_gradient_file_path)
+    font_gradient_im = font_gradient_im.resize((word_box[2] - word_box[0], word_box[3] - word_box[1]))
+    font_alpha = Image.new('L', font_gradient_im.size)
+    font_alpha_d = ImageDraw.Draw(font_alpha)
+    font_alpha_d.text((0, 0), word, fill='White', anchor="lt", font=font)
+    font_gradient_im.putalpha(font_alpha)
+
+    img.paste(font_gradient_im, word_position, font_gradient_im)
 
 
 def circle_corner(img, radii=30, border_width=6):
