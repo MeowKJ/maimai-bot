@@ -31,25 +31,25 @@ def draw_songs(songs, main_img, is_b15, is_draw_title):
         _type = i['type']
 
         # 画歌曲框
-        base_img_path = f'src/static/mai/song/base/{level_index}.png'
+        base_img_path = f'./src/static/mai/song/base/{level_index}.png'
         base_img = Image.open(base_img_path)
         base_img = base_img.resize((190, 252))
 
         # 画歌曲封面
         formatted_song_id = str(song_id).zfill(5)
-        cover_img_path = f'src/static/mai/song/cover/{formatted_song_id}.png'
+        cover_img_path = f'./src/static/mai/song/cover/{formatted_song_id}.png'
         cover_img = Image.open(cover_img_path)
         cover_img = cover_img.resize((152, 152))
         base_img.paste(cover_img, (19, 13), cover_img)
 
         # 画歌曲类型
-        type_img_path = f'src/static/mai/song/{_type}.png'
+        type_img_path = f'./src/static/mai/song/{_type.lower()}.png'
         type_img = Image.open(type_img_path)
         type_img = type_img.resize((85, 22))
         base_img.paste(type_img, (6, 3), type_img)
 
         # 画歌曲分数
-        ra_plate_img = Image.open(f'src/static/mai/song/UI_MSS_Genre_Base_01.png')
+        ra_plate_img = Image.open(f'./src/static/mai/song/UI_MSS_Genre_Base_01.png')
         ra_plate_img = ra_plate_img.resize((60, 32))
         font = ImageFont.truetype('./src/static/font/BungeeInline-Regular.ttf', 18)
         draw_ra_plate = ImageDraw.Draw(ra_plate_img)
@@ -65,7 +65,7 @@ def draw_songs(songs, main_img, is_b15, is_draw_title):
 
         # 画歌曲成就
         if rate != "":
-            rate_img_path = f'src/static/mai/song/rank/{rate}.png'
+            rate_img_path = f'./src/static/mai/song/rank/{rate}.png'
             rate_img = Image.open(rate_img_path)
             rate_img = rate_img.resize((60, 32))
             base_img.paste(rate_img, (10, 210), rate_img)
@@ -75,14 +75,14 @@ def draw_songs(songs, main_img, is_b15, is_draw_title):
 
         badges_x = 135
         if fc != "":
-            fc_img_path = f'src/static/mai/song/badges/{fc}_s.png'
+            fc_img_path = f'./src/static/mai/song/badges/{fc}_s.png'
             fc_img = Image.open(fc_img_path)
             # fc_img = fc_img.resize((40, 40))
             base_img.paste(fc_img, (badges_x, 125), fc_img)
             badges_x -= 35
 
         if fs != "":
-            fs_img_path = f'src/static/mai/song/badges/{fs}_s.png'
+            fs_img_path = f'./src/static/mai/song/badges/{fs}_s.png'
             fs_img = Image.open(fs_img_path)
             # fs_img = fs_img.resize((40, 40))
             base_img.paste(fs_img, (badges_x, 125), fs_img)
@@ -143,11 +143,11 @@ async def draw_plate(main_img, avatar, name, rating):
     plate_img = plate_img.resize((1160, 200))
 
     dx_rating_plate_img = Image.open(
-        f'src/static/mai/dx_rating/UI_CMN_DXRating_S_{get_color_code(rating)}_waifu2x_2x_png.png')
+        f'./src/static/mai/dx_rating/UI_CMN_DXRating_S_{get_color_code(rating)}_waifu2x_2x_png.png')
     dx_rating_plate_img = dx_rating_plate_img.resize((348, 72))
     plate_img.paste(dx_rating_plate_img, (200, 17), dx_rating_plate_img)
 
-    name_plate_img = Image.open(f'src/static/mai/img/name.png')
+    name_plate_img = Image.open(f'./src/static/mai/img/name.png')
     plate_img.paste(name_plate_img, (200, 99), name_plate_img)
 
     if avatar:
