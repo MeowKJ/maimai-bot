@@ -37,8 +37,12 @@ class MyClient(botpy.Client):
             message_text = message_text.replace("/b50", "")
             message_text = message_text.replace(" ", "")
             params = list(message_text)
-
-            img, code = await generate50(message.author.id, message.author.avatar, params)
+            try:
+                img, code = await generate50(message.author.id, message.author.avatar, params)
+            except Exception as e:
+                _log.error(e)
+                await message.reply(content=f"机器人{self.robot.name}发现你的b50查询出现了一些问题")
+                return
             if img:
                 if code == 200 or code == 201:
                     if code == 201:
