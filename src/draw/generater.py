@@ -26,5 +26,4 @@ async def generate50(userid, avatar, params, pic_path="./src/static/mai/images")
                     return os.path.join(pic_path, f"{username}.png"), 201
             update_user_score(userid, obj['rating'])
         pic = await draw(payload['username'], avatar, obj, is_draw_title="n" in params)
-
         return pic, 200
