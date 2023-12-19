@@ -45,9 +45,12 @@ class MyClient(botpy.Client):
                 reply_message = f"{self.robot.name}发现你的b50查询出现了一些问题"
             else:
                 if img:
-                    if code == 200 or code == 201:
-                        if code == 201:
-                            reply_message = f"{self.robot.name}发现你的b50分数距离上次查询没有变化"
+
+                    if code == 201:
+                        reply_message = f"{self.robot.name}发现你的b50分数距离上次查询没有变化"
+                        await message.reply(file_image=img)
+                    elif code == 200:
+                        reply_message = f"{self.robot.name}为你生成了新的b50分数图"
                         await message.reply(file_image=img)
                     else:
                         reply_message = f"{self.robot.name}发现{img}"

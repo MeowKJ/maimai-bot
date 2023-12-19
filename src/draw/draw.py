@@ -156,8 +156,14 @@ async def draw_plate(main_img, avatar, name, rating):
         plate_img.paste(avatar_pic, (7, 8), avatar_pic)
 
     draw_ra_plate = ImageDraw.Draw(plate_img)
-    en_font = ImageFont.truetype('./src/static/font/BungeeInline-Regular.ttf', 48)
-    draw_ra_plate.text((212, 115), str(name), font=en_font, fill=(0, 0, 0))
+    name = str(name)
+    if has_only_common_characters(name):
+        en_font = ImageFont.truetype('./src/static/font/BungeeInline-Regular.ttf', 48)
+    else:
+        en_font = ImageFont.truetype('./src/static/font/happy.ttf', 48)
+
+    draw_ra_plate.text((212, 115), name, font=en_font, fill=(0, 0, 0))
+
     en_font_36 = ImageFont.truetype('./src/static/font/BungeeInline-Regular.ttf', 34)
     draw_ra_plate.text((375, 37), " ".join(str(rating)), font=en_font_36, fill=(255, 215, 0), stroke_width=2,
                        stroke_fill=(0, 0, 0), align='center')

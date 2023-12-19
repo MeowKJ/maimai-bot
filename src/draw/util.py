@@ -1,3 +1,4 @@
+import re
 from io import BytesIO
 
 import aiohttp
@@ -127,3 +128,9 @@ async def process_avatar(avatar_url):
     # Apply circle corner to the avatar
     avatar_image = circle_corner(avatar_image, radii=15)
     return avatar_image
+
+
+def has_only_common_characters(input_str):
+    # 使用正则表达式匹配只含有常见字符、英文和数字的字符串
+    pattern = re.compile("^[a-zA-Z0-9!@#$%^&*()-_+=<>?/.,;:'\"\\s]+$")
+    return bool(pattern.match(input_str))
