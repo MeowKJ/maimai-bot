@@ -20,10 +20,17 @@ async def generate50(userid, avatar, params, pic_path="./src/static/mai/images")
             obj = await resp.json()
         else:
             return "水鱼查分器出现了一些问题，暂时无法查询到您的b50", 500
+
+        if "o" in params:
+            target_path = os.path.join(pic_path, f"{username}_origin.png")
+        else:
+            target_path = os.path.join(pic_path, f"{username}.jpg")
+
         if "f" not in params:
             if get_user_score(userid) == obj['rating']:
-                if os.path.exists(os.path.join(pic_path, f"{username}.png")):
-                    return os.path.join(pic_path, f"{username}.png"), 201
-            update_user_score(userid, obj['rating'])
-        pic = await draw(payload['username'], avatar, obj, is_draw_title="n" in params)
-        return pic, 200
+                if os.path.exists(target_path):
+                    return (target_path, 0), 201
+        update_user_score(userid, obj['rating'])
+
+        time = await draw(payload['username'], avatar, obj, is_draw_title="n" in params)
+        return (target_path, time), 200

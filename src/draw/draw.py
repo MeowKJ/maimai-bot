@@ -1,14 +1,14 @@
-import random
 import os
+import random
 import textwrap
-
+import time
 from datetime import datetime
-from io import BytesIO
 
 from PIL import Image, ImageDraw, ImageFont
+
+from src.draw.compress import compress_png
 from src.draw.util import _log, pic_path, get_color_code2, get_color_code, has_only_common_characters, process_avatar, \
     draw_rainbow_text
-from src.draw.compress import compress_png
 
 
 def draw_songs(songs, main_img, is_b15, is_draw_title):
@@ -244,6 +244,8 @@ def draw_footer(main_img, b15, b35):
 
 
 async def draw(username, avatar, data, is_draw_title=False):
+    start_time = time.time()
+
     random_number = random.randint(1, 10)
     # 如果生成的是10，将其作为2处理
     if random_number == 10:
@@ -279,4 +281,9 @@ async def draw(username, avatar, data, is_draw_title=False):
     compress_path = os.path.join(pic_path, f"{username}.png")
     compression_ratio = await compress_png(origin_path, compress_path)
     _log.info(f"压缩比: {compression_ratio}%")
-    return compress_path
+
+    end_time = time.time()
+    execution_time = end_time - start_time
+    _log.info(f"运行时间: {execution_time} 秒")
+
+    return execution_time
