@@ -177,6 +177,8 @@ def draw_score_nv(main_img, b15_scores, b35_scores):
     b35_scores_q = b35_scores * 50 / 35
     font_path = './src/static/font/BungeeInline-Regular.ttf'
     font_size = 36
+    font = ImageFont.truetype(font_path, font_size)
+
 
     # Create a blank image for drawing
     nv_img = Image.open(f'./src/static/mai/img/title_base.png')
@@ -186,13 +188,15 @@ def draw_score_nv(main_img, b15_scores, b35_scores):
     if b15_scores_q > 15000:
         draw_rainbow_text(nv_img, (x, y), f"B15 -> {b15_scores}", font_path, font_size)
     else:
-        draw_text(draw_f, (x, y), f"B15 -> {b15_scores}", get_color_code2(b15_scores_q), font_path, font_size)
+        draw_f.text((x, y), f"B15 -> {b15_scores}", font=font, fill=get_color_code2(b15_scores_q), stroke_width=2,
+                    stroke_fill=(0, 0, 0))
 
     if b35_scores_q > 15000:
         draw_rainbow_text(nv_img, (x + 270, y), f"B35 -> {b35_scores}", font_path, font_size)
     else:
-        draw_text(draw_f, (x + 270, y), f"B35 -> {b35_scores}", get_color_code2(b35_scores_q), font_path,
-                  font_size)
+        draw_f.text((x + 270, y), f"B35 -> {b35_scores}", font=font, fill=get_color_code2(b15_scores_q), stroke_width=2,
+                    stroke_fill=(0, 0, 0))
+
     main_img.paste(nv_img, (315, 290), nv_img)
 
 
@@ -263,7 +267,6 @@ async def draw(username, avatar, data, is_draw_title=False):
         draw_songs(b35_songs, main_img, False, is_draw_title)
 
     draw_score_nv(main_img, b15_score, b35_score)
-    # draw_hr(main_img)
     draw_footer(main_img, b15_songs, b35_songs)
     draw_character(main_img)
 

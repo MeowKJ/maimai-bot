@@ -27,7 +27,7 @@ def get_color_code2(score):
     elif score < 14500:
         return 255, 215, 0  # 金色
     elif score < 15000:
-        return 229, 228, 226  # 白金色
+        return 255, 195, 0  # 白金色
     else:
         # 彩虹渐变效果
         return 0, 0, 0
@@ -58,9 +58,6 @@ def get_color_code(dx_rating):
         return '10'
 
 
-def draw_text(_draw, position, text, fill, font_path, font_size):
-    font = ImageFont.truetype(font_path, font_size)
-    _draw.text(position, text, font=font, fill=fill)
 
 
 def draw_rainbow_text(img, position, text, font_path, font_size):
