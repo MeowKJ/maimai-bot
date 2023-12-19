@@ -49,7 +49,7 @@ class MyClient(botpy.Client):
                             await message.reply(file_image=img_path)
                         elif code == 200:
                             reply_message = f"{self.robot.name}为你生成了新的b50分数图, 耗时{time:.2f}ms"
-                            await message.reply(file_image=img)
+                            await message.reply(file_image=img_path)
                     else:
                         reply_message = f"{self.robot.name}发现{img}"
         else:

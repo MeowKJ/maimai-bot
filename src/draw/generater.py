@@ -24,8 +24,8 @@ async def generate50(userid, avatar, params, pic_path="./src/static/mai/images")
         if "o" in params:
             target_path = os.path.join(pic_path, f"{username}_origin.png")
         else:
-            target_path = os.path.join(pic_path, f"{username}.jpg")
-
+            target_path = os.path.join(pic_path, f"{username}.png")
+        target_path = os.path.normpath(target_path)
         if "f" not in params:
             if get_user_score(userid) == obj['rating']:
                 if os.path.exists(target_path):
