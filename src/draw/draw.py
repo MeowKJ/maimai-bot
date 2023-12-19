@@ -1,9 +1,14 @@
-import os
 import random
+import os
 import textwrap
-from datetime import datetime
 
-from src.draw.util import *
+from datetime import datetime
+from io import BytesIO
+
+from PIL import Image, ImageDraw, ImageFont
+from src.draw.util import _log, pic_path, get_color_code2, get_color_code, has_only_common_characters, process_avatar, \
+    draw_rainbow_text
+from src.draw.compress import compress_png
 
 
 def draw_songs(songs, main_img, is_b15, is_draw_title):
@@ -179,7 +184,6 @@ def draw_score_nv(main_img, b15_scores, b35_scores):
     font_size = 36
     font = ImageFont.truetype(font_path, font_size)
 
-
     # Create a blank image for drawing
     nv_img = Image.open(f'./src/static/mai/img/title_base.png')
     draw_f = ImageDraw.Draw(nv_img)
@@ -269,6 +273,10 @@ async def draw(username, avatar, data, is_draw_title=False):
     draw_score_nv(main_img, b15_score, b35_score)
     draw_footer(main_img, b15_songs, b35_songs)
     draw_character(main_img)
-
-    main_img.save(os.path.join(pic_path, f'{username}.png'))
-    return os.path.join(pic_path, f'{username}.png')
+    main_img = main_img.convert("RGB")
+    origin_path = os.path.join(pic_path, f"{username}_origin.png")
+    main_img.save(origin_path)
+    compress_path = os.path.join(pic_path, f"{username}.png")
+    compression_ratio = await compress_png(origin_path, compress_path)
+    _log.info(f"压缩比: {compression_ratio}%")
+    return compress_path

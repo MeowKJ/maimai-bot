@@ -9,3 +9,4 @@ test.py
 config.yaml
 *.log
 *.zip
+*.exe

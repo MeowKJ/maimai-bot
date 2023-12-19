@@ -1,8 +1,14 @@
+import asyncio
+import os
 import re
+import subprocess
 from io import BytesIO
 
 import aiohttp
 from PIL import ImageDraw, ImageFont, Image
+from botpy import logging
+
+_log = logging.get_logger()
 
 pic_path = "./src/static/mai/images"
 
@@ -56,8 +62,6 @@ def get_color_code(dx_rating):
         return '09'
     else:
         return '10'
-
-
 
 
 def draw_rainbow_text(img, position, text, font_path, font_size):
@@ -131,3 +135,4 @@ def has_only_common_characters(input_str):
     # 使用正则表达式匹配只含有常见字符、英文和数字的字符串
     pattern = re.compile("^[a-zA-Z0-9!@#$%^&*()-_+=<>?/.,;:'\"\\s]+$")
     return bool(pattern.match(input_str))
+
