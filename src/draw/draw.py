@@ -7,7 +7,7 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 from src.draw.compress import compress_png
-from src.draw.util import _log, pic_path, get_color_code2, get_color_code, has_only_common_characters, process_avatar, \
+from src.util import _log, pic_path, get_color_code2, get_color_code, has_only_common_characters, process_avatar, \
     draw_rainbow_text
 
 

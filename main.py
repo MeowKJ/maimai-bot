@@ -6,7 +6,7 @@ from botpy.message import Message
 
 from src.draw.db import update_or_insert_user
 from src.draw.generater import generate50
-from src.draw.util import _log
+from src.util import _log
 
 test_config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
 

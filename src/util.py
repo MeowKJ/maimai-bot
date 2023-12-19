@@ -136,3 +136,20 @@ def has_only_common_characters(input_str):
     pattern = re.compile("^[a-zA-Z0-9!@#$%^&*()-_+=<>?/.,;:'\"\\s]+$")
     return bool(pattern.match(input_str))
 
+
+def generate_boolean_with_probability(probability):
+    """
+    根据给定的概率生成布尔值。
+
+    Args:
+        probability (int): 期望的概率，范围为1-100。
+
+    Returns:
+        bool: 根据概率生成的布尔值。
+    """
+    # 确保概率在合法范围内
+    probability = max(0, min(100, probability))
+    # 生成一个在1到100之间的随机数
+    random_number = random.randint(1, 100)
+    # 如果随机数小于等于概率，返回True；否则返回False
+    return random_number <= probability
