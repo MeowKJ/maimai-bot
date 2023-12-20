@@ -12,3 +12,5 @@ config.yaml
 *.zip
 *.exe
 test.py
+botpy.log
+botpy.log.*
