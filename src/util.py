@@ -41,31 +41,30 @@ def get_color_code2(score):
 
 def get_color_code(dx_rating):
     if 0 <= dx_rating <= 999:
-        return '00'
+        return "00"
     elif 1000 <= dx_rating <= 1999:
-        return '01'
+        return "01"
     elif 2000 <= dx_rating <= 3999:
-        return '02'
+        return "02"
     elif 4000 <= dx_rating <= 6999:
-        return '03'
+        return "03"
     elif 7000 <= dx_rating <= 9999:
-        return '04'
+        return "04"
     elif 10000 <= dx_rating <= 11999:
-        return '05'
+        return "05"
     elif 12000 <= dx_rating <= 12999:
-        return '06'
+        return "06"
     elif 13000 <= dx_rating <= 13999:
-        return '07'
+        return "07"
     elif 14000 <= dx_rating <= 14499:
-        return '08'
+        return "08"
     elif 14500 <= dx_rating <= 14999:
-        return '09'
+        return "09"
     else:
-        return '10'
+        return "10"
 
 
-def draw_rainbow_text(img, position, text, font_path, font_size):
-    font = ImageFont.truetype(font_path, font_size)
+def draw_rainbow_text(img, position, text, font, font_size):
     word = text
     word_position = position
     # 文字区域的box坐标
@@ -75,10 +74,12 @@ def draw_rainbow_text(img, position, text, font_path, font_size):
 
     # 生成文字区域的alpha图片
     font_gradient_im = Image.open(font_gradient_file_path)
-    font_gradient_im = font_gradient_im.resize((word_box[2] - word_box[0], word_box[3] - word_box[1]))
-    font_alpha = Image.new('L', font_gradient_im.size)
+    font_gradient_im = font_gradient_im.resize(
+        (word_box[2] - word_box[0], word_box[3] - word_box[1])
+    )
+    font_alpha = Image.new("L", font_gradient_im.size)
     font_alpha_d = ImageDraw.Draw(font_alpha)
-    font_alpha_d.text((0, 0), word, fill='White', anchor="lt", font=font)
+    font_alpha_d.text((0, 0), word, fill="White", anchor="lt", font=font)
     font_gradient_im.putalpha(font_alpha)
 
     img.paste(font_gradient_im, word_position, font_gradient_im)
@@ -86,7 +87,7 @@ def draw_rainbow_text(img, position, text, font_path, font_size):
 
 def circle_corner(img, radii=30, border_width=6):
     # 白色区域透明可见，黑色区域不可见
-    circle = Image.new('L', (radii * 2, radii * 2), 0)
+    circle = Image.new("L", (radii * 2, radii * 2), 0)
     draw = ImageDraw.Draw(circle)
     draw.ellipse((0, 0, radii * 2, radii * 2), fill=255)
 
@@ -94,17 +95,21 @@ def circle_corner(img, radii=30, border_width=6):
     w, h = img.size
 
     # 画角
-    alpha = Image.new('L', img.size, 255)
+    alpha = Image.new("L", img.size, 255)
     alpha.paste(circle.crop((0, 0, radii, radii)), (0, 0))  # 左上角
     alpha.paste(circle.crop((radii, 0, radii * 2, radii)), (w - radii, 0))  # 右上角
-    alpha.paste(circle.crop((radii, radii, radii * 2, radii * 2)), (w - radii, h - radii))  # 右下角
+    alpha.paste(
+        circle.crop((radii, radii, radii * 2, radii * 2)), (w - radii, h - radii)
+    )  # 右下角
     alpha.paste(circle.crop((0, radii, radii, radii * 2)), (0, h - radii))  # 左下角
 
     img.putalpha(alpha)
 
     # Add a black border
     draw = ImageDraw.Draw(img)
-    draw.rounded_rectangle(img.getbbox(), outline="black", width=border_width, radius=radii)
+    draw.rounded_rectangle(
+        img.getbbox(), outline="black", width=border_width, radius=radii
+    )
 
     return img
 
