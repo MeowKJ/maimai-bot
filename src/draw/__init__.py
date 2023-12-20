@@ -10,7 +10,9 @@ import aiohttp
 from src.util.database import get_user_name_by_id, get_user_score, update_user_score
 from src.draw.maimai_drawing_board import MaimaiDrawingBoard
 from src.util.tools import generate_boolean_with_probability
-from src.util.context import context
+from src.util.context import context, _log
+
+from src.util.compress import compress_png
 
 
 async def generate_b50(
@@ -76,6 +78,11 @@ async def generate_b50(
             username=username,  # Pass the 'username' argument to the constructor
         )
         await maimai_pic.draw()
-        maimai_pic.save(target_path)
+        maimai_pic.main_img.convert("RGB")
+        origin_path = os.path.join(output_path, f"{username}_origin.png")
+        compress_path = os.path.join(output_path, f"{username}.png")
+        compression_ratio = await compress_png(origin_path, compress_path)
+        _log.info(f"压缩比: {compression_ratio}%")
+        maimai_pic.save(origin_path)
         time_end = time.time()
         return (target_path, time_end - time_start), 200
