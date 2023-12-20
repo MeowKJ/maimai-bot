@@ -63,7 +63,8 @@ async def generate_b50(
             if get_user_score(userid) == obj["rating"]:
                 if os.path.exists(target_path):
                     return (target_path, 0), 201
-        update_user_score(userid, obj["rating"])
+            else:
+                update_user_score(userid, obj["rating"])
         main_img_path = os.path.join(
             context["assets_path"],
             "img",
@@ -71,18 +72,21 @@ async def generate_b50(
         )
         maimai_pic = MaimaiDrawingBoard(
             main_img_path=main_img_path,
+            username=username,
             avatar=avatar,
             data=obj,
             is_draw_title=False,
             is_compress_img=True,
-            username=username,  # Pass the 'username' argument to the constructor
         )
-        await maimai_pic.draw()
-        maimai_pic.main_img.convert("RGB")
+
         origin_path = os.path.join(output_path, f"{username}_origin.png")
         compress_path = os.path.join(output_path, f"{username}.png")
+
+        await maimai_pic.draw()
+        maimai_pic.main_img.convert("RGB")
+        maimai_pic.save(origin_path)
+
         compression_ratio = await compress_png(origin_path, compress_path)
         _log.info(f"压缩比: {compression_ratio}%")
-        maimai_pic.save(origin_path)
         time_end = time.time()
         return (target_path, time_end - time_start), 200

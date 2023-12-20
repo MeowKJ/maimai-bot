@@ -270,3 +270,5 @@ class MaimaiDrawingBoard(DrawingBoard):
         # keep draw_footer before draw_rocket_decor
         self.draw_footer()
         self.draw_rocket_decor()
+
+        return self.main_img
