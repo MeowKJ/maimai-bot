@@ -108,6 +108,24 @@ class SongDrawingBoard(DrawingBoard):
         )
         self.main_img.paste(ra_plate_img, position, ra_plate_img)
 
+    def draw_song_rate(self, position=(10, 210), target_height=32):
+        """
+        Draw the song score.
+
+        Args:
+        - position: The coordinates for drawing the score. Default is (10, 210).
+        - target_height: The target height for the score image. Default is 32.
+        """
+        if self.rate:
+            rate_img_path = os.path.join(
+                self.assets_path, "song", "rank", f"{self.rate}.png"
+            )
+            rate_img = Image.open(rate_img_path)
+            aspect_ratio = rate_img.width / rate_img.height
+            target_width = int(target_height * aspect_ratio)
+            rate_img = rate_img.resize((target_width, target_height))
+            self.main_img.paste(rate_img, position, rate_img)
+
     def draw_song_ds(self, position=(138, 171), font_size=19):
         """
         Draw the song difficulty level.
@@ -127,24 +145,6 @@ class SongDrawingBoard(DrawingBoard):
             align="center",
         )
 
-    def draw_song_rate(self, position=(10, 210), target_height=32):
-        """
-        Draw the song score.
-
-        Args:
-        - position: The coordinates for drawing the score. Default is (10, 210).
-        - target_height: The target height for the score image. Default is 32.
-        """
-        if self.rate:
-            rate_img_path = os.path.join(
-                self.assets_path, "song", "rank", f"{self.rate}.png"
-            )
-            rate_img = Image.open(rate_img_path)
-            aspect_ratio = rate_img.width / rate_img.height
-            target_width = int(target_height * aspect_ratio)
-            rate_img = rate_img.resize((target_width, target_height))
-            self.main_img.paste(rate_img, position, rate_img)
-
     def draw_song_achievement(self, position=(75, 215), font_size=20):
         """
         Draw the song achievement.
@@ -154,7 +154,8 @@ class SongDrawingBoard(DrawingBoard):
         - font_size: The font size for the achievement. Default is 20.
         """
         if self.achievement:
-            self.main_draw.text(
+            draw_base = ImageDraw.Draw(self.main_img)
+            draw_base.text(
                 position,
                 f"{self.achievement:.4f}",
                 font=self.get_font(font_size),
@@ -173,8 +174,8 @@ class SongDrawingBoard(DrawingBoard):
         - font_size: The font size for the title. Default is 16.
         """
         wrapped_text = textwrap.fill(str(self.title), width=11, break_long_words=True)
-
-        self.main_draw.text(
+        draw_base = ImageDraw.Draw(self.main_img)
+        draw_base.text(
             position,
             wrapped_text,
             font=self.get_font(font_size),
@@ -229,14 +230,14 @@ class SongDrawingBoard(DrawingBoard):
         # Draw the song rating
         self.draw_song_rate()
 
-        # Draw the song achievement
-        self.draw_song_achievement()
-
         if self.is_draw_title:
             # Draw the song title
             self.draw_song_title()
 
         # Draw the song badges
         self.draw_song_badge()
+
+        # Draw the song achievement
+        self.draw_song_achievement()
 
         return self.main_img

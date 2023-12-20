@@ -26,7 +26,7 @@ class MaimaiDrawingBoard(DrawingBoard):
         username,
         avatar,
         data,
-        is_draw_title=False,
+        is_draw_title=True,
         is_compress_img=True,
     ):
         """
