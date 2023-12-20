@@ -1,7 +1,6 @@
 """
 This module is the main entry point for the maimai-bot application.
 """
-
 import os
 
 import botpy
