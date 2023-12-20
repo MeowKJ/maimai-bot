@@ -13,7 +13,7 @@ test_config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
 
 class MyClient(botpy.Client):
     async def on_ready(self):
-        _log.info(f"robot 「{self.robot.name}」 on_ready!")
+        _log.info(f"robot 「{self.robot.name}」 on_ready!")  
 
     async def on_at_message_create(self, message: Message):
 
