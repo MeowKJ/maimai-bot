@@ -267,6 +267,7 @@ class MaimaiDrawingBoard(DrawingBoard):
         self.draw_songs(False)
         self.draw_badge()
         self.draw_score_nv(self.b15_score, self.b35_score)
+
         # keep draw_footer before draw_rocket_decor
         self.draw_footer()
         self.draw_rocket_decor()
