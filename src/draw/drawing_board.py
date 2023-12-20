@@ -3,7 +3,8 @@ This module provides the DrawingBoard class for creating images.
 """
 import os
 from PIL import Image, ImageDraw, ImageFont
-from src.context import context
+
+from src.util.context import context
 
 
 class DrawingBoard:
@@ -43,9 +44,9 @@ class DrawingBoard:
         - position (tuple): The position coordinates to paste the image.
         """
         if isinstance(img, DrawingBoard):
-            self.main_img.paste(img.main_img, position)
+            self.main_img.paste(img.main_img, position, img.main_img)
         elif isinstance(img, Image.Image):
-            self.main_img.paste(img, position)
+            self.main_img.paste(img, position, img)
         else:
             raise ValueError(
                 "Invalid image type. Expected PIL.Image.Image or DrawingBoard."
@@ -63,3 +64,18 @@ class DrawingBoard:
         - PIL.ImageFont.FreeTypeFont: The font object.
         """
         return ImageFont.truetype(os.path.join(self.font_path, font), size=size)
+
+    def save(self, path):
+        """
+        Saves the image to the specified path.
+
+        Args:
+        - path (str): The path to save the image.
+        """
+        self.main_img.save(path)
+
+    def show(self):
+        """
+        Displays the image.
+        """
+        self.main_img.show()

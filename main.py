@@ -1,21 +1,45 @@
+"""
+This module is the main entry point for the maimai-bot application.
+"""
+
 import os
 
 import botpy
 from botpy.ext.cog_yaml import read
 from botpy.message import Message
 
-from src.draw.db import update_or_insert_user
-from src.draw.generater import generate50
-from src.util import _log
+from src.util.database import update_or_insert_user
+from src.util.context import _log
+from src.draw import generate_b50
+
 
 test_config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
 
 
 class MyClient(botpy.Client):
+    """
+    MyClient is a custom client class that extends the botpy.Client class.
+    """
+
     async def on_ready(self):
+        """
+        处理机器人准备就绪事件的方法。
+
+        Returns:
+            None
+        """
         _log.info(f"robot 「{self.robot.name}」 on_ready!")
 
     async def on_at_message_create(self, message: Message):
+        """
+        处理@消息创建事件的方法。
+
+        Args:
+            message (Message): 收到的消息对象
+
+        Returns:
+            None
+        """
         _log.info(message.author.username)
         _log.info(message.content)
 
@@ -34,34 +58,31 @@ class MyClient(botpy.Client):
             message_text = message_text.replace("/b50", "")
             message_text = message_text.replace(" ", "")
             params = list(message_text)
-            try:
-                img, code = await generate50(
-                    message.author.id, message.author.avatar, params
-                )
-            except Exception as e:
-                _log.error(e)
-                reply_message = f"{self.robot.name}发现你的b50查询出现了一些问题"
-            else:
-                if img:
-                    if isinstance(img, tuple):
-                        img_path, time = img
-                        if code == 201:
-                            reply_message = f"{self.robot.name}发现你的b50分数距离上次查询没有变化"
-                            await message.reply(file_image=img_path)
-                        elif code == 200:
-                            reply_message = (
-                                f"{self.robot.name}为你生成了新的b50分数图, 耗时{time:.2f}s"
-                            )
-                            await message.reply(file_image=img_path)
-                    else:
-                        reply_message = f"{self.robot.name}发现{img}"
+            img, code = await generate_b50(
+                message.author.id, message.author.avatar, params
+            )
+
+            if img:
+                if isinstance(img, tuple):
+                    img_path, time = img
+                    if code == 201:
+                        reply_message = f"{self.robot.name}发现你的b50分数距离上次查询没有变化"
+                        await message.reply(file_image=img_path)
+                    elif code == 200:
+                        reply_message = f"{self.robot.name}为你生成了新的b50分数图, 耗时{time:.2f}s"
+                        await message.reply(file_image=img_path)
+                else:
+                    reply_message = f"{self.robot.name}发现{img}"
         else:
             message_text = message.content.split(">")[1]
             message_text = message_text.replace(" ", "")
             if not message_text:
                 msg = (
-                    f"帮助文档\n欢迎使用{self.robot.name}\n/bind + 用户名: 绑定水鱼查分器用户名 参数: 水鱼用户名\n/b50 + 参数: 查询b50分数 参数: n:显示乐曲标题("
-                    f'可选)\nTips: 在聊天栏中输入 / 可快速唤起机器人，点击"/b50"可快速完成输入'
+                    "帮助文档\n欢迎使用"
+                    + self.robot.name
+                    + "\n/bind + 用户名: 绑定水鱼查分器用户名 参数: 水鱼用户名\n"
+                    "/b50 + 参数: 查询b50分数 参数: n:显示乐曲标题(可选)\n"
+                    'Tips: 在聊天栏中输入 / 可快速唤起机器人，点击"/b50"可快速完成输入'
                 )
                 reply_message = msg
 

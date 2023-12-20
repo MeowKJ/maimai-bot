@@ -5,7 +5,8 @@ import os
 import textwrap
 from PIL import Image, ImageDraw
 from src.draw.drawing_board import DrawingBoard
-from src.context import context
+
+from src.util.context import context
 
 
 class SongDrawingBoard(DrawingBoard):
@@ -13,7 +14,7 @@ class SongDrawingBoard(DrawingBoard):
     Represents a song drawing board.
     """
 
-    def __init__(self, song_data):
+    def __init__(self, song_data, is_draw_title):
         """
         Initialize the SongDrawingBoard object.
 
@@ -32,6 +33,7 @@ class SongDrawingBoard(DrawingBoard):
         - title: Song title
         - _type: Song type
         """
+        self.is_draw_title = is_draw_title
         self.achievement = song_data["achievements"]
         self.ds = song_data["ds"]
         self.fc = song_data["fc"]
@@ -106,7 +108,7 @@ class SongDrawingBoard(DrawingBoard):
         )
         self.main_img.paste(ra_plate_img, position, ra_plate_img)
 
-    def draw_song_ds(self, position=(12, 7), font_size=19):
+    def draw_song_ds(self, position=(138, 171), font_size=19):
         """
         Draw the song difficulty level.
 
@@ -188,22 +190,23 @@ class SongDrawingBoard(DrawingBoard):
         Args:
         - position: The coordinates for drawing the badges. Default is (135, 125).
         """
+        x, y = position
         if self.fc:
             fc_img_path = os.path.join(
                 self.assets_path, "song", "badges", f"{self.fc}_s.png"
             )
             fc_img = Image.open(fc_img_path)
-            self.paste(fc_img, position)
-            position[0] -= 35
+            self.paste(fc_img, (x, y))
+            x -= 35
 
         if self.fs:
             fs_img_path = os.path.join(
                 self.assets_path, "song", "badges", f"{self.fs}_s.png"
             )
             fs_img = Image.open(fs_img_path)
-            self.paste(fs_img, position)
+            self.paste(fs_img, (x, y))
 
-    def draw(self, is_draw_title=False):
+    def draw(self):
         """
         Draw the song card.
 
@@ -229,7 +232,7 @@ class SongDrawingBoard(DrawingBoard):
         # Draw the song achievement
         self.draw_song_achievement()
 
-        if is_draw_title:
+        if self.is_draw_title:
             # Draw the song title
             self.draw_song_title()
 

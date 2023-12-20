@@ -5,7 +5,11 @@ import os
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
-from src.util import get_color_code, process_avatar, has_only_common_characters
+from src.util.tools import (
+    get_img_code_from_dx_rating,
+    process_avatar,
+    has_only_common_characters,
+)
 
 
 class ProfileDrawingBoard(DrawingBoard):
@@ -13,7 +17,7 @@ class ProfileDrawingBoard(DrawingBoard):
     Represents a profile drawing board.
     """
 
-    def __init__(self, main_img_path, avatar, name, rating):
+    def __init__(self, main_img_path, rating, name, avatar):
         """
         Initialize the ProfileDrawingBoard class.
 
@@ -23,10 +27,10 @@ class ProfileDrawingBoard(DrawingBoard):
             name (str): The name of the profile.
             rating (int): The rating of the profile.
         """
-        super().__init__(main_img_path)
+        super().__init__(main_img_path, resize=(1160, 200))
         self.avatar = avatar
         self.name = name
-        self.rating = rating
+        self.rating = int(rating)
 
     def draw_rating_palte(self, position=(200, 17)):
         """
@@ -40,7 +44,7 @@ class ProfileDrawingBoard(DrawingBoard):
             os.path.join(
                 self.assets_path,
                 "dx_rating",
-                f"UI_CMN_DXRating_S_{get_color_code(self.rating)}_waifu2x_2x_png.png",
+                f"UI_CMN_DXRating_S_{get_img_code_from_dx_rating(self.rating)}_waifu2x_2x_png.png",
             )
         )
         rating_plate_img = rating_plate_img.resize((348, 72))
@@ -68,7 +72,7 @@ class ProfileDrawingBoard(DrawingBoard):
             avatar_pic = await process_avatar(self.avatar)
             self.paste(avatar_pic, position)
 
-    def draw_name_plate(self, position=(120, 75)):
+    def draw_name_plate(self, position=(200, 99)):
         """
         Draw the name plate on the profile drawing board.
 
@@ -88,7 +92,7 @@ class ProfileDrawingBoard(DrawingBoard):
 
         self.paste(name_plate_img, position)
 
-    def draw(self):
+    async def draw(self):
         """
         Draw the profile drawing board.
 
@@ -97,5 +101,5 @@ class ProfileDrawingBoard(DrawingBoard):
         """
         self.draw_rating_palte()
         self.draw_name_plate()
-        self.draw_avatar()
+        await self.draw_avatar()
         return self.main_img
