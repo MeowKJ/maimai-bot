@@ -62,7 +62,12 @@ class SongDrawingBoard(DrawingBoard):
         cover_img_path = os.path.join(
             self.assets_path, "song", "cover", f"{formatted_song_id}.png"
         )
+        if not os.path.exists(cover_img_path):
+            cover_img_path = os.path.join(
+                self.assets_path, "song", "cover", "00000.png"
+            )
         # Open the cover image
+
         cover_img = Image.open(cover_img_path)
         # Resize the cover image
         cover_img = cover_img.resize((152, 152))

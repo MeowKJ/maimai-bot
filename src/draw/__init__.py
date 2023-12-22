@@ -37,7 +37,7 @@ async def generate_b50(
     time_start = time.time()
     username = get_user_name_by_id(userid)
     if username is None:
-        return "发现你还没有绑定水鱼查分器用户名，发送/bind + 用户名，就可以绑定了", 404
+        return "发现你还没有绑定水鱼查分器用户名,发送/bind + 水鱼差分器用户名,就可以绑定了", 404
     payload = {"username": username, "b50": True}
 
     async with aiohttp.request(
@@ -46,13 +46,13 @@ async def generate_b50(
         json=payload,
     ) as resp:
         if resp.status == 400:
-            return f"在水鱼查封器中不存在[{username}]的用户，请检查是否填写了错误的用户名", 404
+            return f"在水鱼查分器中似乎不存在[{username}]的用户, 请检查是否填写了错误的用户名", 404
         if resp.status == 403:
-            return "没有权限查询的您的b50,如果需要查询请在查分器中开启权限", 300
+            return "没有权限查询的您的b50", 403
         if resp.status == 200:
             obj = await resp.json()
         else:
-            return "水鱼查分器出现了一些问题,暂时无法查询到您的b50", 500
+            return "出现了一些可能是网络上的问题, 暂时无法查询到您的b50", 500
 
         if "o" in params:
             target_path = os.path.join(output_path, f"{username}_origin.png")
