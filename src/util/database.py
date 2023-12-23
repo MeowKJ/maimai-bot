@@ -24,6 +24,7 @@ class User(Base):
     id = Column(BigInteger, primary_key=True)
     name = Column(String, nullable=False)
     score = Column(Integer, default=0)
+    unlock_id = Column(String, default="")  # 新添加的列
 
 
 # 创建表格
@@ -138,6 +139,39 @@ def get_user_score(user_id):
     score = user.score if user else None
     session.close()
     return score
+
+
+def update_user_unlock_id(user_id, unlock_id):
+    """
+    Updates the score of a user in the database.
+
+    Args:
+        user_id (int): The ID of the user.
+        score (int): The new score of the user.
+    """
+    session = Session()
+    user = session.query(User).get(user_id)
+    if user:
+        user.unlock_id = unlock_id
+        session.commit()
+    session.close()
+
+
+def get_user_unlock_id(user_id):
+    """
+    Retrieves the score of a user from the database.
+
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        int: The score of the user.
+    """
+    session = Session()
+    user = session.query(User).get(user_id)
+    unlock_id = user.unlock_id if user else None
+    session.close()
+    return unlock_id
 
 
 def get_user_name_by_id(user_id):

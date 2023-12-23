@@ -5,12 +5,12 @@ import os
 
 import botpy
 from botpy.ext.cog_yaml import read
-from botpy.message import Message
+from botpy.message import Message, DirectMessage
 
 from src.util.database import update_or_insert_user
 from src.util.context import _log
 from src.draw import generate_b50
-
+from src.util.unlock import unlock, bind_unlock_id
 
 test_config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
 
@@ -28,6 +28,16 @@ class MyClient(botpy.Client):
             None
         """
         _log.info(f"robot 「{self.robot.name}」 on_ready!")
+
+    async def on_direct_message_create(self, message: DirectMessage):
+        if message.content.startswith("/bindid"):
+            unlock_id = message.content.replace("/bindid", "")
+            bind_unlock_id(message.author.id, unlock_id)
+            await message.reply(content="绑定成功")
+
+        if message.content.startswith("o"):
+            result = await unlock(message.author.id)
+            await message.reply(content=result)
 
     async def on_at_message_create(self, message: Message):
         """
@@ -92,6 +102,6 @@ class MyClient(botpy.Client):
 
 
 if __name__ == "__main__":
-    intents = botpy.Intents(public_guild_messages=True)
+    intents = botpy.Intents(public_guild_messages=True, direct_message=True)
     client = MyClient(intents=intents)
     client.run(appid=test_config["appid"], secret=test_config["secret"])
