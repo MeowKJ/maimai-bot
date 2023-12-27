@@ -13,6 +13,7 @@ from src.util.tools import (
 from src.draw.drawing_board import DrawingBoard
 from src.draw.song_drawing_board import SongDrawingBoard
 from src.draw.profile_drawing_board import ProfileDrawingBoard
+from src.data.player import Player
 
 
 class MaimaiDrawingBoard(DrawingBoard):
@@ -23,9 +24,7 @@ class MaimaiDrawingBoard(DrawingBoard):
     def __init__(
         self,
         main_img_path,
-        username,
-        avatar,
-        data,
+        player: Player,
         is_draw_title=True,
         is_compress_img=True,
     ):
@@ -41,17 +40,10 @@ class MaimaiDrawingBoard(DrawingBoard):
             is_compress_img (bool, optional): Whether to compress the image. Defaults to True.
         """
         super().__init__(main_img_path=main_img_path)
-        self.username = username
-        self.avatar = avatar
-        self.data = data
+        self.player = player
 
         self.is_draw_title = is_draw_title
         self.is_compress_img = is_compress_img
-
-        self.b15_songs = data["charts"]["dx"]
-        self.b35_songs = data["charts"]["sd"]
-        self.b15_score = 0
-        self.b35_score = 0
 
     def draw_songs(self, is_b15, position_b15=(100, 2050), position_b35=(100, 405)):
         """
@@ -65,19 +57,17 @@ class MaimaiDrawingBoard(DrawingBoard):
                 Defaults to (100, 405).
         """
         if is_b15:
-            song_data_list = self.b15_songs
+            song_data_list = self.player.song_data_b15
             position = position_b15
             position_x = position_b15[0]
             position_y = position_b15[1]
         else:
-            song_data_list = self.b35_songs
+            song_data_list = self.player.song_data_b35
             position = position_b35
             position_x = position_b35[0]
             position_y = position_b35[1]
         x, y = 0, 0
-        score = 0
         for song_data in song_data_list:
-            score += song_data["ra"]
             song_plate = SongDrawingBoard(song_data, self.is_draw_title)
             song_plate.draw()
             self.paste(song_plate, (position_x, position_y))
@@ -88,11 +78,6 @@ class MaimaiDrawingBoard(DrawingBoard):
                 position_x = position[0]
                 position_y = position_y + 267
                 x = 0
-
-        if is_b15:
-            self.b15_score = score
-        else:
-            self.b35_score = score
 
     def draw_rocket_decor(self, position=(1192, 2643)):
         """
@@ -126,7 +111,9 @@ class MaimaiDrawingBoard(DrawingBoard):
 
         self.main_img.paste(character_img, position, character_img)
 
-    async def draw_profile_plate(self, rating, name, avatar, position=(120, 75)):
+    async def draw_profile_plate(
+        self, rating, name, avatar, name_plate, position=(120, 75)
+    ):
         """
         Draw a plate containing user information on the main image.
 
@@ -139,13 +126,26 @@ class MaimaiDrawingBoard(DrawingBoard):
         """
         # Implement the content of the draw_plate method
         profile_plate_main_img_dir = os.path.join(self.assets_path, "plate", "raw")
-        profile_plate_main_img_list = os.listdir(profile_plate_main_img_dir)
-        profile_plate_main_img_file = random.choice(profile_plate_main_img_list)
+        if isinstance(self.player.name_plate, int) and os.path.exists(
+            os.path.join(
+                self.assets_path,
+                "plate",
+                "raw",
+                f"UI_Plate_{self.player.name_plate:06d}.png",
+            )
+        ):
+            profile_plate_main_img_file = f"UI_Plate_{self.player.name_plate:06d}.png"
+
+        else:
+            profile_plate_main_img_list = os.listdir(profile_plate_main_img_dir)
+            profile_plate_main_img_file = random.choice(profile_plate_main_img_list)
+
         profile_plate = ProfileDrawingBoard(
             os.path.join(profile_plate_main_img_dir, profile_plate_main_img_file),
             rating,
             name,
             avatar,
+            name_plate,
         )
         await profile_plate.draw()
         self.paste(profile_plate, position)
@@ -228,16 +228,17 @@ class MaimaiDrawingBoard(DrawingBoard):
         else:
             y = 75
             x = 40
-        if self.b15_score > 0:
-            b15_max = self.b15_songs[0]["ra"]
-            b15_min = self.b15_songs[-1]["ra"]
+        if self.player.song_data_b15_total > 0:
+            b15_max = self.player.song_data_b15[0].rating
+            b15_min = self.player.song_data_b15[-1].rating
+
             draw_f.text(
                 (x, y), f"B15 -> MAX {b15_max} MIN {b15_min}", font=font, fill=(0, 0, 0)
             )
 
-        if self.b35_score > 0:
-            b35_max = self.b35_songs[0]["ra"]
-            b35_min = self.b35_songs[-1]["ra"]
+        if self.player.song_data_b35_total > 0:
+            b35_max = self.player.song_data_b35[0].rating
+            b35_min = self.player.song_data_b35[-1].rating
             draw_f.text(
                 (x, y := y + 50),
                 f"B35 -> MAX {b35_max} MIN {b35_min}",
@@ -262,11 +263,18 @@ class MaimaiDrawingBoard(DrawingBoard):
         """
         Draw the complete image.
         """
-        await self.draw_profile_plate(self.data["rating"], self.username, self.avatar)
+        await self.draw_profile_plate(
+            self.player.rating,
+            self.player.nickname,
+            self.player.avatar_url,
+            self.player.name_plate,
+        )
         self.draw_songs(True)
         self.draw_songs(False)
         self.draw_badge()
-        self.draw_score_nv(self.b15_score, self.b35_score)
+        self.draw_score_nv(
+            self.player.song_data_b15_total, self.player.song_data_b35_total
+        )
 
         # keep draw_footer before draw_rocket_decor
         self.draw_footer()

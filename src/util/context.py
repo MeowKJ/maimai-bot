@@ -1,7 +1,9 @@
 """
 Context for botpy
 """
+import os
 
+from botpy.ext.cog_yaml import read
 from botpy import logging
 
 context = {
@@ -12,4 +14,5 @@ context = {
     "mix_font": "happy.ttf",
 }
 
-_log = logging.get_logger()
+logger = logging.get_logger()
+app_config = read("config.yaml")

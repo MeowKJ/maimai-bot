@@ -5,10 +5,11 @@ import re
 import os
 from io import BytesIO
 import random
+import time
 
 import aiohttp
 from PIL import ImageDraw, Image
-from src.util.context import context
+from src.util.context import context, logger
 
 
 def get_color_code_from_score(score):
@@ -224,3 +225,52 @@ def generate_boolean_with_probability(probability):
     random_number = random.randint(1, 100)
     # 如果随机数小于等于概率，返回True；否则返回False
     return random_number <= probability
+
+
+async def fetch_image(source):
+    if source.startswith("http"):
+        # 处理云端链接
+        async with aiohttp.ClientSession() as session:
+            async with session.get(source) as response:
+                image_data = await response.read()
+                return Image.open(BytesIO(image_data))
+    else:
+        # 处理本地文件
+        with open(source, "rb") as file:
+            image_data = file.read()
+            return Image.open(BytesIO(image_data))
+
+
+def time_count():
+    """
+    计算函数执行时间的装饰器。
+
+    Returns:
+        function: 装饰器。
+    """
+
+    def decorator(func):
+        async def wrapper(*args, **kwargs):
+            time_start = time.time()
+            result = await func(*args, **kwargs)
+            time_end = time.time()
+            logger.info(
+                f"Function {func.__name__} executed in {time_end - time_start}s"
+            )
+            return result
+
+        return wrapper
+
+    return decorator
+
+
+def is_valid_luoxue_username(s):
+    # 检查字符串是否为纯数字
+    if not s.isdigit():
+        return False
+
+    # 检查字符串长度是否在6到10之间
+    if 6 < len(s) < 11:
+        return True
+    else:
+        return False

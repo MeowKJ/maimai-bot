@@ -5,6 +5,7 @@ import os
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
+
 from src.util.tools import (
     get_img_code_from_dx_rating,
     process_avatar,
@@ -17,7 +18,7 @@ class ProfileDrawingBoard(DrawingBoard):
     Represents a profile drawing board.
     """
 
-    def __init__(self, main_img_path, rating, name, avatar):
+    def __init__(self, main_img_path, rating, name, avatar, name_plate):
         """
         Initialize the ProfileDrawingBoard class.
 
@@ -31,6 +32,7 @@ class ProfileDrawingBoard(DrawingBoard):
         self.avatar = avatar
         self.name = name
         self.rating = int(rating)
+        self.name_plate = name_plate
 
     def draw_rating_palte(self, position=(200, 17)):
         """

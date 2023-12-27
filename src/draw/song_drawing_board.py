@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw
 from src.draw.drawing_board import DrawingBoard
 
 from src.util.context import context
+from src.data.song import SongData
 
 
 class SongDrawingBoard(DrawingBoard):
@@ -14,7 +15,7 @@ class SongDrawingBoard(DrawingBoard):
     Represents a song drawing board.
     """
 
-    def __init__(self, song_data, is_draw_title):
+    def __init__(self, song_data: SongData, is_draw_title):
         """
         Initialize the SongDrawingBoard object.
 
@@ -33,19 +34,18 @@ class SongDrawingBoard(DrawingBoard):
         - title: Song title
         - _type: Song type
         """
+        self.song_data = song_data
         self.is_draw_title = is_draw_title
-        self.achievement = song_data["achievements"]
-        self.ds = song_data["ds"]
-        self.fc = song_data["fc"]
-        self.fs = song_data["fs"]
-        self.level_index = song_data["level_index"]
-        self.ra = song_data["ra"]
-        self.rate = song_data["rate"]
-        self.song_id = song_data["song_id"]
-        self.title = song_data["title"]
-        self._type = song_data["type"]
+        base_color = ""
+        if song_data.achievements >= 100:
+            base_color = "_r"
+        elif song_data.achievements >= 99:
+            base_color = "_g"
         main_img_path = os.path.join(
-            context["assets_path"], "song", "base", f"{self.level_index}.png"
+            context["assets_path"],
+            "song",
+            "base",
+            f"{self.song_data.level_index}{base_color}.png",
         )
         super().__init__(main_img_path, resize=(190, 252))
 
@@ -57,7 +57,7 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the cover. Default is (19, 13).
         """
         # Format the song ID
-        formatted_song_id = str(self.song_id).zfill(5)
+        formatted_song_id = str(self.song_data.song_id).zfill(5)
         # Get the cover image path
         cover_img_path = os.path.join(
             self.assets_path, "song", "cover", f"{formatted_song_id}.png"
@@ -82,7 +82,7 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the type. Default is (6, 3).
         """
         type_img_path = os.path.join(
-            self.assets_path, "song", f"{self._type.lower()}.png"
+            self.assets_path, "song", f"{self.song_data.type.lower()}.png"
         )
         type_img = Image.open(type_img_path)
         type_img = type_img.resize((85, 22))
@@ -104,7 +104,7 @@ class SongDrawingBoard(DrawingBoard):
         draw_ra_plate = ImageDraw.Draw(ra_plate_img)
         draw_ra_plate.text(
             (12, 7),
-            str(self.ra),
+            str(self.song_data.rating),
             font=font_ra,
             fill=(255, 200, 0),
             stroke_width=2,
@@ -121,9 +121,9 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the score. Default is (10, 210).
         - target_height: The target height for the score image. Default is 32.
         """
-        if self.rate:
+        if self.song_data.rating_icon:
             rate_img_path = os.path.join(
-                self.assets_path, "song", "rank", f"{self.rate}.png"
+                self.assets_path, "song", "rank", f"{self.song_data.rating_icon}.png"
             )
             rate_img = Image.open(rate_img_path)
             aspect_ratio = rate_img.width / rate_img.height
@@ -142,7 +142,7 @@ class SongDrawingBoard(DrawingBoard):
         draw_base = ImageDraw.Draw(self.main_img)
         draw_base.text(
             position,
-            str(self.ds),
+            str(self.song_data.ds),
             font=self.get_font(font_size),
             fill=(255, 255, 255),
             stroke_width=2,
@@ -158,11 +158,11 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the achievement. Default is (75, 215).
         - font_size: The font size for the achievement. Default is 20.
         """
-        if self.achievement:
+        if self.song_data.achievements:
             draw_base = ImageDraw.Draw(self.main_img)
             draw_base.text(
                 position,
-                f"{self.achievement:.4f}",
+                f"{self.song_data.achievements:.4f}",
                 font=self.get_font(font_size),
                 fill=(255, 255, 255),
                 stroke_width=1,
@@ -178,7 +178,9 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the title. Default is (20, 25).
         - font_size: The font size for the title. Default is 16.
         """
-        wrapped_text = textwrap.fill(str(self.title), width=11, break_long_words=True)
+        wrapped_text = textwrap.fill(
+            str(self.song_data.title), width=11, break_long_words=True
+        )
         draw_base = ImageDraw.Draw(self.main_img)
         draw_base.text(
             position,
@@ -197,17 +199,17 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the badges. Default is (135, 125).
         """
         x, y = position
-        if self.fc:
+        if self.song_data.fc:
             fc_img_path = os.path.join(
-                self.assets_path, "song", "badges", f"{self.fc}_s.png"
+                self.assets_path, "song", "badges", f"{self.song_data.fc}_s.png"
             )
             fc_img = Image.open(fc_img_path)
             self.paste(fc_img, (x, y))
             x -= 35
 
-        if self.fs:
+        if self.song_data.fs:
             fs_img_path = os.path.join(
-                self.assets_path, "song", "badges", f"{self.fs}_s.png"
+                self.assets_path, "song", "badges", f"{self.song_data.fs}_s.png"
             )
             fs_img = Image.open(fs_img_path)
             self.paste(fs_img, (x, y))
