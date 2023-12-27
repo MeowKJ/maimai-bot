@@ -56,7 +56,7 @@ class Player:
                 self.rating = obj["rating"]
                 for i in obj["charts"]["dx"]:
                     song_data = SongData.from_data_divingfish(i)
-                    self.song_data_b35_total += song_data.rating
+                    self.song_data_b15_total += song_data.rating
                     self.song_data_b15.append(song_data)
 
                 for i in obj["charts"]["sd"]:
