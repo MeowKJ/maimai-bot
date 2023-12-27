@@ -23,25 +23,25 @@ def get_color_code_from_score(score):
         tuple: 颜色代码，格式为 (R, G, B)。
     """
     if score < 1000:
-        return 255, 255, 255  # 白色
+        return 0, 0, 0  # 白色
     elif score < 2000:
-        return 0, 0, 255  # 蓝色
+        return 0, 221, 238  # 蓝色
     elif score < 4000:
-        return 0, 128, 0  # 绿色
+        return 0, 204, 85  # 绿色
     elif score < 7000:
-        return 255, 255, 0  # 黄色
+        return 238, 136, 17  # 黄色
     elif score < 10000:
-        return 255, 0, 0  # 红色
+        return 238, 0, 17  # 红色
     elif score < 12000:
-        return 128, 0, 128  # 紫色
+        return 238, 0, 238  # 紫色
     elif score < 13000:
-        return 184, 115, 51  # 青铜色
+        return 136, 51, 0  # 青铜色
     elif score < 14000:
         return 91, 140, 170  # 银色
     elif score < 14500:
-        return 255, 215, 0  # 金色
+        return 255, 195, 0  # 金色
     elif score < 15000:
-        return 255, 195, 0  # 白金色
+        return 255, 215, 0  # 白金色
     else:
         # 彩虹渐变效果
         return 0, 0, 0
