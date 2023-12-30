@@ -2,22 +2,20 @@ import aiohttp
 import base64
 from cryptography.fernet import Fernet
 
+from src.util.context import UNLOCK_KEY
+from src.database.database_manager import (
+    get_unlock_id_by_user_id,
+    update_unlock_id_by_user_id,
+)
 
-from src.util.database import get_user_unlock_id, update_user_unlock_id
-
-
-# 从文件中读取密钥
-with open("secret_key.txt", "rb") as key_file:
-    SECRET_KEY = key_file.read()
-
-cipher_suite = Fernet(SECRET_KEY)
+cipher_suite = Fernet(UNLOCK_KEY)
 
 
 async def unlock(user_id):
     """
     Unlocks.
     """
-    unlock_id_encrypted = get_user_unlock_id(user_id)
+    unlock_id_encrypted = await get_unlock_id_by_user_id(user_id)
     if unlock_id_encrypted is None:
         return "你还没有绑定ID"
     else:
@@ -39,7 +37,7 @@ async def unlock(user_id):
                     return f"HTTP请求失败，状态码: {response.status}"
 
 
-def bind_unlock_id(user_id, unlock_id):
+async def bind_unlock_id(user_id, unlock_id):
     """
     Binds using Fernet symmetric encryption.
     """
@@ -49,6 +47,6 @@ def bind_unlock_id(user_id, unlock_id):
     ).decode("utf-8")
 
     # 更新用户的解锁ID
-    update_user_unlock_id(user_id, unlock_id_encrypted)
+    await update_unlock_id_by_user_id(user_id, unlock_id_encrypted)
 
     return "绑定成功"

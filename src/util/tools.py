@@ -7,9 +7,12 @@ from io import BytesIO
 import random
 import time
 
+
 import aiohttp
+
+
 from PIL import ImageDraw, Image
-from src.util.context import context, logger
+from src.util.context import static_config, logger
 
 
 def get_color_code_from_score(score):
@@ -97,7 +100,7 @@ def draw_rainbow_text(img, position, text, font):
     word_box = font.getbbox(word)
     # 渐变颜色效果图片
     font_gradient_file_path = os.path.join(
-        context["assets_path"], "img", "gradient.png"
+        static_config["assets_path"], "img", "gradient.png"
     )
 
     # 生成文字区域的alpha图片
@@ -270,7 +273,4 @@ def is_valid_luoxue_username(s):
         return False
 
     # 检查字符串长度是否在6到10之间
-    if 6 < len(s) < 11:
-        return True
-    else:
-        return False
+    return 6 < len(s) < 11

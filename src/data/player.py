@@ -1,10 +1,10 @@
-import aiohttp
 from typing import List
+import aiohttp
 
-from src.util.context import app_config
+from src.util.context import bot_config
 from src.data.song import SongData
 
-api_secret = app_config["api_secret"]
+api_secret = bot_config["api_secret"]
 
 
 class Player:

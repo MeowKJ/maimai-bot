@@ -6,7 +6,7 @@ import textwrap
 from PIL import Image, ImageDraw
 from src.draw.drawing_board import DrawingBoard
 
-from src.util.context import context
+from src.util.context import static_config
 from src.data.song import SongData
 
 
@@ -42,7 +42,7 @@ class SongDrawingBoard(DrawingBoard):
         elif song_data.achievements >= 99:
             base_color = "_g"
         main_img_path = os.path.join(
-            context["assets_path"],
+            static_config["assets_path"],
             "song",
             "base",
             f"{self.song_data.level_index}{base_color}.png",
@@ -69,6 +69,7 @@ class SongDrawingBoard(DrawingBoard):
         # Open the cover image
 
         cover_img = Image.open(cover_img_path)
+        cover_img = cover_img.convert("RGBA")
         # Resize the cover image
         cover_img = cover_img.resize((152, 152))
         # Paste the cover image onto the main image

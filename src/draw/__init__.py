@@ -4,14 +4,16 @@ This module contains the functions for generating maimai images.
 import os
 import time
 
-import aiohttp
-
-
-from src.util.database import get_user_name_by_id, get_user_score, update_user_score
 from src.draw.maimai_drawing_board import MaimaiDrawingBoard
 from src.util.tools import generate_boolean_with_probability, is_valid_luoxue_username
-from src.util.context import context, logger
+from src.util.context import static_config, logger
 from src.util.compress import compress_png
+
+from src.database.database_manager import (
+    get_name_score_by_id,
+    create_or_update_user_by_id_name,
+    update_score_by_id,
+)
 
 from src.data.player import Player
 
@@ -20,7 +22,7 @@ async def generate_b50(
     userid,
     avatar_url,
     params,
-    output_path=os.path.join(context["assets_path"], "images"),
+    output_path=os.path.join(static_config["assets_path"], "images"),
 ):
     """
     Generate a maimai image with b50 information.
@@ -39,7 +41,7 @@ async def generate_b50(
         int: The HTTP status code indicating the result of the generation process.
     """
     time_start = time.time()
-    username = get_user_name_by_id(userid)
+    username, score = await get_name_score_by_id(userid)
 
     is_use_origin = "o" in params
     is_force_generate = "f" in params
@@ -75,19 +77,15 @@ async def generate_b50(
     target_path = os.path.normpath(target_path)
 
     # 是否强制生成
-    if (
-        not is_force_generate
-        and os.path.exists(target_path)
-        and get_user_score(userid) == player.rating
-    ):
+    if not is_force_generate and os.path.exists(target_path) and score == player.rating:
         return 201, "你的DX Rating没有变化", target_path
 
     # 更新玩家rating
-    update_user_score(userid, player.rating)
+    await update_score_by_id(userid, player.rating)
 
     # 准备背景图片
     main_img_path = os.path.join(
-        context["assets_path"],
+        static_config["assets_path"],
         "img",
         "main2.png" if generate_boolean_with_probability(10) else "main1.png",
     )
