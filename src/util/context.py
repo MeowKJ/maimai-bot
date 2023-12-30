@@ -1,7 +1,6 @@
 """
 Context for botpy
 """
-import asyncio
 import argparse
 import yaml
 from botpy import logging
@@ -17,6 +16,7 @@ def load_config():
     )
     args = parser.parse_args()
     env = args.e
+    logger.info(f"Environment: {env}")
     with open("config.yaml", "r", encoding="utf-8") as file:
         conf = yaml.safe_load(file)
         return conf.get(env, {})
