@@ -1,12 +1,13 @@
-import aiohttp
 import base64
+
+import aiohttp
 from cryptography.fernet import Fernet
 
-from src.util.context import UNLOCK_KEY
 from src.database.database_manager import (
     get_unlock_id_by_user_id,
     update_unlock_id_by_user_id,
 )
+from src.util.context import UNLOCK_KEY
 
 cipher_suite = Fernet(UNLOCK_KEY)
 
@@ -23,7 +24,7 @@ async def unlock(user_id):
         unlock_id = cipher_suite.decrypt(base64.b64decode(unlock_id_encrypted)).decode(
             "utf-8"
         )
-
+        print(unlock_id)
         # 构建API请求URL
         api_url = f"https://maihook.lemonkoi.one/api/idunlocker?userid={unlock_id}"
 

@@ -2,10 +2,10 @@
 This module represents a profile drawing board.
 """
 import os
+
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
-
 from src.util.tools import (
     get_img_code_from_dx_rating,
     process_avatar,
@@ -24,9 +24,10 @@ class ProfileDrawingBoard(DrawingBoard):
 
         Args:
             main_img_path (str): The path to the main image.
-            avatar (str): The avatar image.
-            name (str): The name of the profile.
             rating (int): The rating of the profile.
+            name (str): The name of the profile.
+            avatar (image.pyi): The avatar image.
+            name_plate (str): The name plate image.
         """
         super().__init__(main_img_path, resize=(1160, 200))
         self.avatar = avatar
@@ -34,7 +35,7 @@ class ProfileDrawingBoard(DrawingBoard):
         self.rating = int(rating)
         self.name_plate = name_plate
 
-    def draw_rating_palte(self, position=(200, 17)):
+    def draw_rating_plate(self, position=(200, 17)):
         """
         Draw the rating plate on the profile drawing board.
 
@@ -101,7 +102,7 @@ class ProfileDrawingBoard(DrawingBoard):
         Returns:
             Image: The profile drawing board image.
         """
-        self.draw_rating_palte()
+        self.draw_rating_plate()
         self.draw_name_plate()
         await self.draw_avatar()
         return self.main_img

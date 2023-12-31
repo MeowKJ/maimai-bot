@@ -4,14 +4,10 @@ static
 .vscode
 venv
 __pycache__
+log
 *.psd
 *.db
 test.py
 config.yaml
-*.log
 *.zip
 *.exe
-test.py
-botpy.log
-botpy.log.*
-secret_key.txt

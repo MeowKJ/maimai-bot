@@ -4,16 +4,17 @@ A module for drawing the Maimai game board.
 import os.path
 import random
 from datetime import datetime
+
 from PIL import Image, ImageDraw
+
+from src.draw.drawing_board import DrawingBoard
+from src.draw.profile_drawing_board import ProfileDrawingBoard
+from src.draw.song_drawing_board import SongDrawingBoard
 from src.util.tools import (
     draw_rainbow_text,
     get_color_code_from_score,
 )
-
-from src.draw.drawing_board import DrawingBoard
-from src.draw.song_drawing_board import SongDrawingBoard
-from src.draw.profile_drawing_board import ProfileDrawingBoard
-from src.data.player import Player
+from .data_models.player import Player
 
 
 class MaimaiDrawingBoard(DrawingBoard):
@@ -33,9 +34,7 @@ class MaimaiDrawingBoard(DrawingBoard):
 
         Args:
             main_img_path (str): The path of the main image.
-            username (str): The username.
-            avatar (str): The path of the avatar image.
-            data (dict): A dictionary containing the drawing data.
+            player (Player): The player data.
             is_draw_title (bool, optional): Whether to draw the title. Defaults to False.
             is_compress_img (bool, optional): Whether to compress the image. Defaults to True.
         """
@@ -120,7 +119,8 @@ class MaimaiDrawingBoard(DrawingBoard):
         Args:
             rating (int): The user's rating.
             name (str): The username.
-            avatar (Image): The user's avatar.
+            avatar (str): The user's avatar.
+            name_plate (str): The name plate image.
             position (tuple, optional): The starting position to draw the profile plate.
                 Defaults to (120, 75).
         """
@@ -162,8 +162,8 @@ class MaimaiDrawingBoard(DrawingBoard):
         """
         x = 130
         y = 35
-        b15_scores_q = b15_scores * 50 / 15
-        b35_scores_q = b35_scores * 50 / 35
+        b15_scores_q = int(b15_scores * 50 / 15)
+        b35_scores_q = int(b35_scores * 50 / 35)
         font_size = 36
 
         # Create a blank image for drawing

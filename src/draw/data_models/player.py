@@ -1,8 +1,9 @@
 from typing import List
+
 import aiohttp
 
 from src.util.context import bot_config
-from src.data.song import SongData
+from .song import SongData
 
 api_secret = bot_config["api_secret"]
 
@@ -20,7 +21,7 @@ class Player:
         Args:
             username (str): The username of the player.
             guild_id (int): The ID of the guild the player belongs to.
-            icon_url (str): The URL of the player's icon.
+            avatar_url (str): The URL of the player's icon.
         """
         self.username = username
         self.guild_id = guild_id

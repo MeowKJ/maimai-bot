@@ -3,11 +3,12 @@ This module contains the SongDrawingBoard class.
 """
 import os
 import textwrap
-from PIL import Image, ImageDraw
-from src.draw.drawing_board import DrawingBoard
 
+from PIL import Image, ImageDraw
+
+from src.draw.drawing_board import DrawingBoard
 from src.util.context import static_config
-from src.data.song import SongData
+from .data_models.song import SongData
 
 
 class SongDrawingBoard(DrawingBoard):
