@@ -13,6 +13,8 @@ DEFAULT_FILE_HANDLER["filename"] = os.path.join(os.getcwd(), "log", "%(name)s.lo
 
 
 if __name__ == "__main__":
+    if not os.path.exists("log"):
+        os.makedirs("log")
     intents = botpy.Intents(public_guild_messages=True, direct_message=True)
     client = MyClient(
         intents=intents,
