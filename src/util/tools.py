@@ -35,11 +35,11 @@ def get_color_code_from_score(score):
         (14000, 14499, (255, 207, 51)),  # 金色
         (14500, 14999, (255, 251, 85)),  # 白金色
     ]
-    
+
     for lower, upper, color in score_ranges:
         if lower <= score <= upper:
             return color
-    
+
     # 彩虹渐变效果，假定为黑色
     return 0, 0, 0
 
