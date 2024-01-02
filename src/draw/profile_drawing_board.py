@@ -55,7 +55,7 @@ class ProfileDrawingBoard(DrawingBoard):
         rating_plate_draw.text(
             (175, 20),
             " ".join(str(self.rating)),
-            font=self.get_font(34),
+            font = (self.get_font(33),)
             fill=(255, 215, 0),
             stroke_width=2,
             stroke_fill=(0, 0, 0),

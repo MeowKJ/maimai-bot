@@ -1,17 +1,15 @@
 """
 Tools
 """
-import re
 import os
-from io import BytesIO
 import random
+import re
 import time
-
+from io import BytesIO
 
 import aiohttp
-
-
 from PIL import ImageDraw, Image
+
 from src.util.context import static_config, logger
 
 
@@ -25,29 +23,25 @@ def get_color_code_from_score(score):
     Returns:
         tuple: 颜色代码，格式为 (R, G, B)。
     """
-    if score < 1000:
-        return 0, 0, 0  # 白色
-    elif score < 2000:
-        return 0, 221, 238  # 蓝色
-    elif score < 4000:
-        return 0, 204, 85  # 绿色
-    elif score < 7000:
-        return 238, 136, 17  # 黄色
-    elif score < 10000:
-        return 238, 0, 17  # 红色
-    elif score < 12000:
-        return 238, 0, 238  # 紫色
-    elif score < 13000:
-        return 136, 51, 0  # 青铜色
-    elif score < 14000:
-        return 91, 140, 170  # 银色
-    elif score < 14500:
-        return 255, 195, 0  # 金色
-    elif score < 15000:
-        return 255, 215, 0  # 白金色
-    else:
-        # 彩虹渐变效果
-        return 0, 0, 0
+    score_ranges = [
+        (0, 999, (0, 0, 0)),  # 白色
+        (1000, 1999, (0, 221, 238)),  # 蓝色
+        (2000, 3999, (0, 204, 85)),  # 绿色
+        (4000, 6999, (238, 136, 17)),  # 黄色
+        (7000, 9999, (238, 0, 17)),  # 红色
+        (10000, 11999, (238, 0, 238)),  # 紫色
+        (12000, 12999, (136, 51, 0)),  # 青铜色
+        (13000, 13999, (91, 140, 170)),  # 银色
+        (14000, 14499, (255, 207, 51)),  # 金色
+        (14500, 14999, (255, 251, 85)),  # 白金色
+    ]
+    
+    for lower, upper, color in score_ranges:
+        if lower <= score <= upper:
+            return color
+    
+    # 彩虹渐变效果，假定为黑色
+    return 0, 0, 0
 
 
 def get_img_code_from_dx_rating(dx_rating):
@@ -60,28 +54,24 @@ def get_img_code_from_dx_rating(dx_rating):
     Returns:
         str: 图片代码。
     """
-    if 0 <= dx_rating <= 999:
-        return "00"
-    elif 1000 <= dx_rating <= 1999:
-        return "01"
-    elif 2000 <= dx_rating <= 3999:
-        return "02"
-    elif 4000 <= dx_rating <= 6999:
-        return "03"
-    elif 7000 <= dx_rating <= 9999:
-        return "04"
-    elif 10000 <= dx_rating <= 11999:
-        return "05"
-    elif 12000 <= dx_rating <= 12999:
-        return "06"
-    elif 13000 <= dx_rating <= 13999:
-        return "07"
-    elif 14000 <= dx_rating <= 14499:
-        return "08"
-    elif 14500 <= dx_rating <= 14999:
-        return "09"
-    else:
-        return "10"
+    ranges = [
+        (0, 999, "01"),
+        (1000, 1999, "02"),
+        (2000, 3999, "03"),
+        (4000, 6999, "04"),
+        (7000, 9999, "05"),
+        (10000, 11999, "06"),
+        (12000, 12999, "07"),
+        (13000, 13999, "08"),
+        (14000, 14499, "09"),
+        (14500, 14999, "09"),
+    ]
+
+    for lower, upper, code in ranges:
+        if lower <= dx_rating <= upper:
+            return code
+
+    return "10"
 
 
 def draw_rainbow_text(img, position, text, font):

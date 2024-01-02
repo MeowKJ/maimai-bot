@@ -20,7 +20,7 @@ class Player:
 
         Args:
             username (str): The username of the player.
-            guild_id (int): The ID of the guild the player belongs to.
+            guild_id (str): The ID of the guild the player belongs to.
             avatar_url (str): The URL of the player's icon.
         """
         self.username = username
@@ -77,7 +77,6 @@ class Player:
         auth_headers = {
             "Authorization": api_secret,
         }
-        obj = None
         async with aiohttp.request(
             "GET",
             base_api + "/api/v0/maimai/player/qq/" + str(self.username),

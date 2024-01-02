@@ -25,7 +25,7 @@ async def generate_b50(
     Generate a maimai image with b50 information.
 
     Args:
-        userid (int): The user ID.
+        userid (str): The user ID.
         avatar_url (str): The avatar image path.
         params (list): Additional parameters for image generation.
         output_path (str, optional): The output path for the generated image.
