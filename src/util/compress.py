@@ -8,16 +8,6 @@ import subprocess
 
 
 async def compress_png(fp, output, force=True, quality=None):
-    """异步压缩函数.
-    Args：
-        fp: 文件名称
-        output: 压缩后的文件名称
-        force: 如果存在同名文件，是否覆盖
-        quality: 压缩质量。 10-40, or 10
-
-    Returns:
-        压缩比
-    """
     force_command = "-f" if force else ""
     quality_command = ""
 
