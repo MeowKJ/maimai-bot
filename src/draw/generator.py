@@ -4,14 +4,19 @@ This module contains the functions for generating maimai images.
 import os
 import time
 
+from botpy import logger
+
 from src.database.database_manager import (
     get_name_score_by_id,
     update_score_by_id,
 )
 from src.draw.maimai_drawing_board import MaimaiDrawingBoard
-from src.util.compress import compress_png
-from src.util.context import static_config, logger
-from src.util.tools import generate_boolean_with_probability, is_valid_luoxue_username
+from src.utils.app_config import config
+from src.utils.common_utils import (
+    generate_boolean_with_probability,
+    is_valid_luoxue_username,
+)
+from src.utils.compress_utils import compress_png
 from .data_models.player import Player
 
 
@@ -19,7 +24,7 @@ async def generate_b50(
     userid,
     avatar_url,
     params,
-    output_path=os.path.join(static_config["assets_path"], "images"),
+    output_path=os.path.join(config.static_config["assets_path"], "images"),
 ):
     """
     Generate a maimai image with b50 information.
@@ -58,6 +63,7 @@ async def generate_b50(
         username=username,
         guild_id=userid,
         avatar_url=avatar_url,
+        api_secret=config.bot_config["api_secret"],
     )
 
     if is_valid_luoxue_username(username):
@@ -84,7 +90,7 @@ async def generate_b50(
 
     # 准备背景图片
     main_img_path = os.path.join(
-        static_config["assets_path"],
+        config.static_config["assets_path"],
         "img",
         "main2.png" if generate_boolean_with_probability(10) else "main1.png",
     )

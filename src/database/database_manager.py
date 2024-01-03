@@ -1,20 +1,13 @@
-# db_manager.py
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+# db_manager.py - 数据库管理器。
 
 from src.database.base62_encoder import Base62Encoder
+from src.database.database_factory import DatabaseFactory
 from src.database.models import User, Base
-from src.util.context import DATABASE_URL
+from src.utils.app_config import config
 
-# Create an Async Engine
-engine = create_async_engine(DATABASE_URL, echo=False, pool_size=20)
-
-# Create Async Session
-AsyncSessionLocal = sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
-)
-
-# CRUD Operations
+db_factory = DatabaseFactory(config)
+engine = db_factory.get_engine()
+AsyncSessionLocal = db_factory.get_session()
 
 
 async def create_tables():

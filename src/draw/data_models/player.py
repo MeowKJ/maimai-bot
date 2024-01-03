@@ -2,10 +2,7 @@ from typing import List
 
 import aiohttp
 
-from src.util.context import bot_config
 from .song import SongData
-
-api_secret = bot_config["api_secret"]
 
 
 class Player:
@@ -14,6 +11,7 @@ class Player:
         username,
         guild_id,
         avatar_url,
+        api_secret,
     ):
         """
         Initializes a Player object.
@@ -41,6 +39,7 @@ class Player:
 
         self.song_data_b15_total = 0
         self.song_data_b35_total = 0
+        self.api_secret = api_secret
 
     async def fetch_divingfish(self):
         """
@@ -75,15 +74,17 @@ class Player:
         """
         base_api = "https://maimai.lxns.net"
         auth_headers = {
-            "Authorization": api_secret,
+            "Authorization": self.api_secret,
         }
         async with aiohttp.request(
             "GET",
             base_api + "/api/v0/maimai/player/qq/" + str(self.username),
             headers=auth_headers,
         ) as resp:
-            if resp.status != 200:
-                return resp.status, "爆炸了"
+            if resp.status == 404:
+                return resp.status, "未能找到您的数据, 请检查与落雪查分器中绑定的QQ号是否一致"
+            elif resp.status != 200:
+                return resp.status, "暂时无法查询到您的b50"
             obj = await resp.json()
             if obj["code"] == 403:
                 return 403, "发现没有开启选项[允许读取玩家信息]"
@@ -106,8 +107,10 @@ class Player:
             base_api + "/api/v0/maimai/player/" + str(friend_code) + "/bests",
             headers=auth_headers,
         ) as resp:
-            if resp.status != 200:
-                return resp.status, "爆炸了"
+            if resp.status == 404:
+                return resp.status, "未能找到您的数据, 请检查与落雪查分器中绑定的QQ号是否一致"
+            elif resp.status != 200:
+                return resp.status, "暂时无法查询到您的b50"
             obj = await resp.json()
             if obj["code"] == 403:
                 return 403, "发现没有开启选项[允许读取谱面成绩]"

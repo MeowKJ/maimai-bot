@@ -2,9 +2,10 @@
 This module provides the DrawingBoard class for creating images.
 """
 import os
+
 from PIL import Image, ImageDraw, ImageFont
 
-from src.util.context import static_config
+from src.utils.app_config import config
 
 
 class DrawingBoard:
@@ -25,11 +26,11 @@ class DrawingBoard:
         - main_img_path (str): The path to the main image file.
         - resize (tuple, optional): The target size to resize the main image. Defaults to None.
         """
-        self.assets_path = static_config["assets_path"]
-        self.font_path = static_config["font_path"]
-        self.en_font = static_config["en_font"]
-        self.jp_font = static_config["jp_font"]
-        self.mix_font = static_config["mix_font"]
+        self.assets_path = config.static_config["assets_path"]
+        self.font_path = config.static_config["font_path"]
+        self.en_font = config.static_config["en_font"]
+        self.jp_font = config.static_config["jp_font"]
+        self.mix_font = config.static_config["mix_font"]
         self.main_img = Image.open(main_img_path)
         self.main_draw = ImageDraw.Draw(self.main_img)
         if resize is not None:
@@ -52,7 +53,7 @@ class DrawingBoard:
                 "Invalid image type. Expected PIL.Image.Image or DrawingBoard."
             )
 
-    def get_font(self, size, font=static_config["en_font"]):
+    def get_font(self, size, font=config.static_config["en_font"]):
         """
         Returns a font object of the specified size.
 

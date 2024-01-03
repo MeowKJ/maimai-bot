@@ -1,4 +1,4 @@
-# base62_encoder.py
+# base62_encoder.py - Base62 encoder and decoder
 import string
 
 

@@ -6,11 +6,9 @@ import os
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
-from src.util.tools import (
-    get_img_code_from_dx_rating,
-    process_avatar,
-    has_only_common_characters,
-)
+from src.utils.avatar_utils import process_avatar
+from src.utils.color_utils import get_img_code_from_dx_rating
+from src.utils.common_utils import has_only_common_characters
 
 
 class ProfileDrawingBoard(DrawingBoard):

@@ -7,19 +7,16 @@ import botpy
 from botpy.logging import DEFAULT_FILE_HANDLER
 
 from src.bot.client import MyClient
-from src.util.context import bot_config
-
-DEFAULT_FILE_HANDLER["filename"] = os.path.join(os.getcwd(), "log", "%(name)s.log")
-
+from src.utils.app_config import config
 
 if __name__ == "__main__":
-    if not os.path.exists("log"):
-        os.makedirs("log")
+    DEFAULT_FILE_HANDLER["filename"] = os.path.join(os.getcwd(), "log", "%(name)s.log")
+
     intents = botpy.Intents(public_guild_messages=True, direct_message=True)
     client = MyClient(
         intents=intents,
-        is_sandbox=bot_config["is_sandbox"],
+        is_sandbox=config.bot_config["is_sandbox"],
         timeout=20,
         ext_handlers=DEFAULT_FILE_HANDLER,
     )
-    client.run(appid=bot_config["appid"], secret=bot_config["secret"])
+    client.run(appid=config.bot_config["appid"], secret=config.bot_config["secret"])

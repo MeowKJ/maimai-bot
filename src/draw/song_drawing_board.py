@@ -7,7 +7,6 @@ import textwrap
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
-from src.util.context import static_config
 from .data_models.song import SongData
 
 
@@ -16,7 +15,7 @@ class SongDrawingBoard(DrawingBoard):
     Represents a song drawing board.
     """
 
-    def __init__(self, song_data: SongData, is_draw_title):
+    def __init__(self, main_img_path, song_data: SongData, is_draw_title):
         """
         Initialize the SongDrawingBoard object.
 
@@ -37,17 +36,7 @@ class SongDrawingBoard(DrawingBoard):
         """
         self.song_data = song_data
         self.is_draw_title = is_draw_title
-        base_color = ""
-        if song_data.achievements >= 100:
-            base_color = "_r"
-        elif song_data.achievements >= 99:
-            base_color = "_g"
-        main_img_path = os.path.join(
-            static_config["assets_path"],
-            "song",
-            "base",
-            f"{self.song_data.level_index}{base_color}.png",
-        )
+
         super().__init__(main_img_path, resize=(190, 252))
 
     def draw_song_cover(self, position=(19, 13)):
@@ -59,15 +48,25 @@ class SongDrawingBoard(DrawingBoard):
         """
         # Format the song ID
         formatted_song_id = str(self.song_data.song_id).zfill(5)
-        # Get the cover image path
-        cover_img_path = os.path.join(
-            self.assets_path, "song", "cover", f"{formatted_song_id}.png"
+
+        # Define the possible cover image paths
+        cover_img_path_1 = os.path.join(
+            self.assets_path, "song", "cover", f"1{formatted_song_id[1:]}.png"
         )
-        if not os.path.exists(cover_img_path):
+        cover_img_path_0 = os.path.join(
+            self.assets_path, "song", "cover", f"0{formatted_song_id[1:]}.png"
+        )
+
+        # Check if either of the cover image paths exists
+        if os.path.exists(cover_img_path_1):
+            cover_img_path = cover_img_path_1
+        elif os.path.exists(cover_img_path_0):
+            cover_img_path = cover_img_path_0
+        else:
+            # Default cover image path if neither exists
             cover_img_path = os.path.join(
                 self.assets_path, "song", "cover", "00000.png"
             )
-        # Open the cover image
 
         cover_img = Image.open(cover_img_path)
         cover_img = cover_img.convert("RGBA")

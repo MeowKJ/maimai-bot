@@ -10,10 +10,8 @@ from PIL import Image, ImageDraw
 from src.draw.drawing_board import DrawingBoard
 from src.draw.profile_drawing_board import ProfileDrawingBoard
 from src.draw.song_drawing_board import SongDrawingBoard
-from src.util.tools import (
-    draw_rainbow_text,
-    get_color_code_from_score,
-)
+from src.utils.color_utils import get_color_code_from_score
+from src.utils.image_utils import draw_rainbow_text
 from .data_models.player import Player
 
 
@@ -67,7 +65,18 @@ class MaimaiDrawingBoard(DrawingBoard):
             position_y = position_b35[1]
         x, y = 0, 0
         for song_data in song_data_list:
-            song_plate = SongDrawingBoard(song_data, self.is_draw_title)
+            base_color = ""
+            if song_data.achievements >= 100:
+                base_color = "_r"
+            elif song_data.achievements >= 99:
+                base_color = "_g"
+            main_img_path = os.path.join(
+                self.assets_path,
+                "song",
+                "base",
+                f"{song_data.level_index}{base_color}.png",
+            )
+            song_plate = SongDrawingBoard(main_img_path, song_data, self.is_draw_title)
             song_plate.draw()
             self.paste(song_plate, (position_x, position_y))
             x = x + 1
@@ -177,6 +186,7 @@ class MaimaiDrawingBoard(DrawingBoard):
                 (x, y),
                 f"B15 -> {b15_scores}",
                 self.get_font(font_size),
+                os.path.join(self.assets_path, "img", "gradient.png"),
             )
         else:
             draw_f.text(
@@ -194,6 +204,7 @@ class MaimaiDrawingBoard(DrawingBoard):
                 (x + 270, y),
                 f"B35 -> {b35_scores}",
                 self.get_font(font_size),
+                os.path.join(self.assets_path, "img", "gradient.png"),
             )
         else:
             draw_f.text(

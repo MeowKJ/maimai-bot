@@ -1,4 +1,5 @@
 import botpy
+from botpy import logger
 from botpy.message import Message
 
 from src.bot.message import get_raw_message
@@ -7,7 +8,6 @@ from src.database.database_manager import (
     create_tables,
 )
 from src.draw.generator import generate_b50
-from src.util.context import logger
 
 command_handlers = {}
 
