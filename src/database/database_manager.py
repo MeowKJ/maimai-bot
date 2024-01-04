@@ -44,26 +44,27 @@ async def update_score_by_id(user_id: str, score: int):
         user = await session.get(User, encoded_id)
         if user:
             user.score = score
+            user.score_update_count += 1  # 增加计数
             await session.commit()
             return user
         return None
 
 
-async def get_unlock_id_by_user_id(user_id: str):
-    encoded_id = Base62Encoder.encode(user_id)
-    async with AsyncSessionLocal() as session:
-        user = await session.get(User, encoded_id)
-        if user:
-            return user.unlock_id
-        return None
-
-
-async def update_unlock_id_by_user_id(user_id: str, unlock_id: str):
-    encoded_id = Base62Encoder.encode(user_id)
-    async with AsyncSessionLocal() as session:
-        user = await session.get(User, encoded_id)
-        if user:
-            user.unlock_id = unlock_id
-            await session.commit()
-            return user
-        return None
+# async def get_unlock_id_by_user_id(user_id: str):
+#     encoded_id = Base62Encoder.encode(user_id)
+#     async with AsyncSessionLocal() as session:
+#         user = await session.get(User, encoded_id)
+#         if user:
+#             return user.unlock_id
+#         return None
+#
+#
+# async def update_unlock_id_by_user_id(user_id: str, unlock_id: str):
+#     encoded_id = Base62Encoder.encode(user_id)
+#     async with AsyncSessionLocal() as session:
+#         user = await session.get(User, encoded_id)
+#         if user:
+#             user.unlock_id = unlock_id
+#             await session.commit()
+#             return user
+#         return None
