@@ -16,6 +16,7 @@ class AppConfig:
         return cls._instance
 
     def __init__(self):
+        self.qmsg_key = None
         self.bot_config = None
         self.static_config = None
         self.database_url = None
@@ -31,6 +32,7 @@ class AppConfig:
                     self.bot_config = env_config.get("bot_config", {})
                     self.static_config = env_config.get("static_config", {})
                     self.database_url = env_config.get("database_url", "")
+                    self.qmsg_key = env_config.get("qmsg_key", "")
                     self.debug = env_config.get("debug", False)
                     self.loaded = True
             except Exception as e:

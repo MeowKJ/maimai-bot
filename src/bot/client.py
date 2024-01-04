@@ -8,43 +8,52 @@ from src.database.database_manager import (
     create_tables,
 )
 from src.draw.generator import generate_b50
+from src.utils.qmsg import send_admin_message
 
 command_handlers = {}
 
 
 def command_handler(command):
     def decorator(func):
-        command_handlers[command] = func
-        return func
+        async def wrapper(*args, **kwargs):
+            try:
+                return await func(*args, **kwargs)
+            except Exception as e:
+                exception_info = f"Error in {func.__name__}: {str(e)}"
+                await send_admin_message(exception_info)
+                raise e
+
+        command_handlers[command] = wrapper
+        return wrapper
 
     return decorator
+
+
+@command_handler("/bind")
+async def handle_bind_command(self, message: Message):
+    message_text = get_raw_message(message.content).replace("/bind", "").strip()
+    if not message_text:
+        return f"{self.robot.name}发现你要绑定的用户名是空的"
+    if await create_or_update_user_by_id_name(message.author.id, message_text):
+        return f"[{message_text}]已经绑定到你的频道号了"
+    else:
+        return f"绑定[{message_text}]失败，发生了错误"
+
+
+@command_handler("/b50")
+async def handle_b50_command(self, message: Message):
+    message_text = get_raw_message(message.content).replace("/b50", "").strip()
+    params = list(message_text)
+    _, msg, img = await generate_b50(message.author.id, message.author.avatar, params)
+    if img:
+        await message.reply(file_image=img)
+    return msg
 
 
 class MyClient(botpy.Client):
     async def on_ready(self):
         await create_tables()
         logger.info(f"robot 「{self.robot.name}」 on_ready!")
-
-    @command_handler("/bind")
-    async def handle_bind_command(self, message: Message):
-        message_text = get_raw_message(message.content).replace("/bind", "").strip()
-        if not message_text:
-            return f"{self.robot.name}发现你要绑定的用户名是空的"
-        if await create_or_update_user_by_id_name(message.author.id, message_text):
-            return f"[{message_text}]已经绑定到你的频道号了"
-        else:
-            return f"绑定[{message_text}]失败，发生了错误"
-
-    @command_handler("/b50")
-    async def handle_b50_command(self, message: Message):
-        message_text = get_raw_message(message.content).replace("/b50", "").strip()
-        params = list(message_text)
-        _, msg, img = await generate_b50(
-            message.author.id, message.author.avatar, params
-        )
-        if img:
-            await message.reply(file_image=img)
-        return msg
 
     async def on_at_message_create(self, message: Message):
         logger.info(f"Received message from user: {message.author.username}")
