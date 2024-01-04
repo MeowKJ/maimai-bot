@@ -1,6 +1,6 @@
 import botpy
 from botpy import logger
-from botpy.message import Message
+from botpy.message import Message, DirectMessage
 
 from src.bot.message import get_raw_message
 from src.database.database_manager import (
@@ -67,4 +67,10 @@ class MyClient(botpy.Client):
             )
             await message.reply(
                 content=f"@{message.author.username} {self.robot.name} {msg}"
+            )
+
+    async def on_direct_message_create(self, message: DirectMessage):
+        if message.content.startswith("/b50") or message.content.startswith("/bind"):
+            await message.reply(
+                content=f"{message.author.username}你好！{self.robot.name}目前暂未开放私聊权限，请在群聊中使用"
             )
