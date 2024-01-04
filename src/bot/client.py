@@ -72,5 +72,5 @@ class MyClient(botpy.Client):
     async def on_direct_message_create(self, message: DirectMessage):
         if message.content.startswith("/b50") or message.content.startswith("/bind"):
             await message.reply(
-                content=f"{message.author.username}你好! {self.robot.name}目前暂未开放私聊权限，请在群聊中使用"
+                content=f"{message.author.username}你好! {self.robot.name}暂未开放私聊权限，请在群聊中使用😊"
             )
