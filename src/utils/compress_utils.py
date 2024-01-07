@@ -58,11 +58,9 @@ async def compress_png(fp, output, force=True, quality=None):
 
         return compression_ratio
         # 剩下的代码...
-    except asyncio.CancelledError:
+    except asyncio.CancelledError as exc:
         # 处理异步任务被取消的情况
-        raise f"Task was cancelled"
+        raise exc from None
     except Exception as e:
         # 处理其他异常
-        raise f"An error occurred: {e}"
-
-    #
+        raise RuntimeError(f"An error occurred: {e}") from e

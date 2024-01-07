@@ -109,8 +109,14 @@ async def generate_b50(
     maimai_pic.save(origin_path)
 
     compress_path = os.path.join(output_path, f"{username}.png")
+
     compression_ratio = await compress_png(origin_path, compress_path)
-    logger.info(f"压缩比: {compression_ratio}%")
+
+    if compression_ratio is None:
+        target_path = origin_path
+        logger.error("压缩失败 -- %s", compress_path)
+
+    logger.info("压缩比: %.2f%%", compression_ratio)
 
     time_end = time.time()
     msg += f"生成成功，用时{time_end - time_start:.2f}s"
