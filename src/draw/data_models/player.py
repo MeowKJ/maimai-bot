@@ -93,14 +93,15 @@ class Player:
             elif obj["code"] != 200:
                 return obj["code"], "暂时无法查询到您的b50"
 
-            self.nickname = obj["data"]["name"]
-            self.rating = obj["data"]["rating"]
-            self.class_rank = obj["data"]["class_rank"]
-            self.course_rank = obj["data"]["course_rank"]
-            self.star = obj["data"]["star"]
-            self.avatar_url = obj["data"]["icon_url"]
-            friend_code = obj["data"]["friend_code"]
-            self.name_plate = obj["data"]["name_plate"]["id"]
+            self.nickname = obj["data"].get("name")
+            self.rating = obj["data"].get("rating")
+            self.class_rank = obj["data"].get("class_rank")
+            self.course_rank = obj["data"].get("course_rank")
+            self.star = obj["data"].get("star")
+            self.avatar_url = obj["data"].get("icon_url")
+            friend_code = obj["data"].get("friend_code")
+            self.name_plate = obj["data"]["name_plate"].get("id") if "name_plate" in obj["data"] else None
+
 
         async with aiohttp.request(
             "GET",

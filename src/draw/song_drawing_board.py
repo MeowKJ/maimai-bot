@@ -7,8 +7,9 @@ import textwrap
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
-from .data_models.song import SongData
+from src.utils.qmsg import send_admin_message
 
+from .data_models.song import SongData
 
 class SongDrawingBoard(DrawingBoard):
     """
@@ -64,6 +65,7 @@ class SongDrawingBoard(DrawingBoard):
             cover_img_path = cover_img_path_0
         else:
             # Default cover image path if neither exists
+            send_admin_message(f"歌曲封面不存在: {formatted_song_id}, {self.song_data.title}, {cover_img_path_1}, {cover_img_path_0}")
             cover_img_path = os.path.join(
                 self.assets_path, "song", "cover", "00000.png"
             )
