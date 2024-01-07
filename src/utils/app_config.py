@@ -1,6 +1,5 @@
-import argparse
+import sys
 import os
-
 import yaml
 from botpy import logger
 
@@ -11,8 +10,6 @@ class AppConfig:
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(AppConfig, cls).__new__(cls)
-            # 在这里，可以执行类实例的初始化操作
-
         return cls._instance
 
     def __init__(self):
@@ -23,37 +20,77 @@ class AppConfig:
         self.debug = False
         self.loaded = False
 
-    def load(self, config_path, env):
+    def load(self, config_path):
+        """
+        Load the config file.
+
+        Args:
+            config_path: The path of the config file.
+        """
         if not self.loaded:
             try:
                 with open(config_path, "r", encoding="utf-8") as file:
                     conf = yaml.safe_load(file)
-                    env_config = conf.get(env, {})
-                    self.bot_config = env_config.get("bot_config", {})
-                    self.static_config = env_config.get("static_config", {})
-                    self.database_url = env_config.get("database_url", "")
-                    self.qmsg_key = env_config.get("qmsg_key", "")
-                    self.debug = env_config.get("debug", False)
+                    self.bot_config = conf.get("bot_config", {})
+                    self.static_config = conf.get("static_config", {})
+                    self.database_url = conf.get("database_url", "")
+                    self.qmsg_key = conf.get("qmsg_key", "")
+                    self.debug = conf.get("debug", False)
                     self.loaded = True
-            except Exception as e:
+            except FileNotFoundError as e:
+                print(f"Error loading config: {e}")
+            except yaml.YAMLError as e:
                 print(f"Error loading config: {e}")
 
 
-def app_init():
+def create_config_file(config_path):
+    """
+    Create the config file if it does not exist.
+
+    Args:
+        config_path: The path of the config file.
+
+    """
+    if not os.path.exists(config_path):
+        default_config = {
+            "bot_config": {
+                "appid": "",
+                "secret": "",
+                "api_secret": "",
+                "is_sandbox": False,
+            },
+            "static_config": {
+                "assets_path": "./static/mai",
+                "font_path": "./static/fonts",
+                "en_font": "BungeeInline-Regular.ttf",
+                "jp_font": "CusterMagic-Regular.ttf",
+                "mix_font": "happy.ttf",
+            },
+            "database_url": "",
+            "qmsg_key": "",
+            "debug": False,
+        }
+        with open(config_path, "w", encoding="utf-8") as file:
+            yaml.dump(default_config, file)
+
+
+def app_init(config_path="config.yaml"):
+    """
+    Initialize the app.
+
+    Args:
+        config_path: The path of the config file.
+    """
     if not os.path.exists("log"):
         os.makedirs("log")
 
-    parser = argparse.ArgumentParser(description="maimai bot")
-    parser.add_argument(
-        "-e",
-        choices=["development", "production"],
-        default="development",
-        help="Set the environment (development/production)",
-    )
-    args = parser.parse_args()
-    env = args.e
-    logger.info(f"Environment: {env}")
-    config.load("config.yaml", env)
+    create_config_file(config_path)
+
+    if not os.path.exists(config_path):
+        logger.error("%s not found!", config_path)
+        sys.exit(1)
+
+    config.load(config_path)
 
 
 # 创建配置实例
