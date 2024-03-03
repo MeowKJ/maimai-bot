@@ -4,10 +4,8 @@ This module contains the functions for generating maimai images.
 
 import os
 import time
-
 from botpy import logger
-
-import requests
+import aiohttp
 
 from src.database.database_manager import (
     get_name_score_by_id,
@@ -23,14 +21,13 @@ from src.utils.compress_utils import compress_png
 from .data_models.player import Player
 
 
-def heartbeat_request(url):
-    while True:
-        response = requests.get(url)
-        if response.status_code == 200:
-            print("Heartbeat request successful!")
-        else:
-            print("Heartbeat request failed.")
-        time.sleep(60)  # 每分钟执行一次请求
+async def heartbeat_request(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                print("Heartbeat request successful!")
+            else:
+                print("Heartbeat request failed.")
 
 
 async def generate_b50(
@@ -134,5 +131,5 @@ async def generate_b50(
     time_end = time.time()
 
     msg += f"生成成功，用时{time_end - time_start:.2f}s"
-    heartbeat_request(config.heartbeat_url)
+    await heartbeat_request(config.heartbeat_url)
     return 200, msg, target_path
