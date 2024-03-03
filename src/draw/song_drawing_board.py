@@ -42,7 +42,7 @@ class SongDrawingBoard(DrawingBoard):
 
         super().__init__(main_img_path, resize=(190, 252))
 
-    def draw_song_cover(self, position=(19, 13)):
+    async def draw_song_cover(self, position=(19, 13)):
         """
         Draw the song cover.
 
@@ -51,7 +51,7 @@ class SongDrawingBoard(DrawingBoard):
         """
         # Format the song ID
 
-        cover_img_path = self.asstes.get(AssetType.COVER, self.song_data.song_id)
+        cover_img_path = await self.asstes.get(AssetType.COVER, self.song_data.song_id)
 
         try:
             cover_img = Image.open(cover_img_path)
@@ -205,7 +205,7 @@ class SongDrawingBoard(DrawingBoard):
             fs_img = Image.open(fs_img_path)
             self.paste(fs_img, (x, y))
 
-    def draw(self):
+    async def draw(self):
         """
         Draw the song card.
 
@@ -214,7 +214,7 @@ class SongDrawingBoard(DrawingBoard):
         """
 
         # Draw the song cover
-        self.draw_song_cover()
+        await self.draw_song_cover()
 
         # Draw the song type
         self.draw_song_type()
