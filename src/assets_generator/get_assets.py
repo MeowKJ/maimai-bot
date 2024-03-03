@@ -36,7 +36,9 @@ class Assets:
             if isinstance(param_value, (int)) and param_value > 10000:
                 param_value = param_value % 10000
         # 定义本地文件路径
-        local_file_path = os.path.join(self.assets_folder, asset_type.name, param_value)
+        local_file_path = os.path.join(
+            self.assets_folder, asset_type.name, str(param_value)
+        )
 
         # 检查资产是否存在于本地
         if os.path.exists(local_file_path):
