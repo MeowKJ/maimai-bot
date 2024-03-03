@@ -37,7 +37,7 @@ class Assets:
                 param_value = param_value % 10000
         # 定义本地文件路径
         local_file_path = os.path.join(
-            self.assets_folder, asset_type.name, str(param_value)
+            self.assets_folder, asset_type.name.lower(), str(param_value)
         )
 
         # 检查资产是否存在于本地
