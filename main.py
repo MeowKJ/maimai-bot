@@ -11,16 +11,6 @@ from src.bot.client import MyClient
 from src.utils.app_config import config
 
 
-def heartbeat_request(url):
-    while True:
-        response = requests.get(url)
-        if response.status_code == 200:
-            print("Heartbeat request successful!")
-        else:
-            print("Heartbeat request failed.")
-        time.sleep(60)  # 每分钟执行一次请求
-
-
 if __name__ == "__main__":
     DEFAULT_FILE_HANDLER["filename"] = os.path.join(os.getcwd(), "log", "%(name)s.log")
 
@@ -31,11 +21,5 @@ if __name__ == "__main__":
         timeout=20,
         ext_handlers=DEFAULT_FILE_HANDLER,
     )
-
-    # 创建线程并启动
-    heartbeat_thread = threading.Thread(
-        target=heartbeat_request, args=(config.heartbeat_url,)
-    )
-    heartbeat_thread.start()
 
     client.run(appid=config.bot_config["appid"], secret=config.bot_config["secret"])
