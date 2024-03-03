@@ -60,10 +60,8 @@ class Assets:
             async with session.get(url) as response:
                 if response.status != 200:
                     raise ValueError(f"请求失败，状态码为 {response.status}")
-
                 # 读取文件内容
                 content = await response.read()
-
                 # 将内容保存到文件中
                 with open(save_path, "wb") as file:
                     file.write(content)

@@ -56,7 +56,8 @@ class SongDrawingBoard(DrawingBoard):
             )
             cover_img = Image.open(cover_img_path)
         except Exception as e:
-            send_admin_message(f"Error: {e}")
+            print(f"Error: {e}")
+            await send_admin_message(f"Error: {e}")
             return
 
         cover_img = cover_img.convert("RGBA")
