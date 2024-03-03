@@ -45,7 +45,7 @@ class Assets:
             return local_file_path
 
         # 如果本地不存在资产，则下载
-        asset_url = f"{self.base_url}{asset_type.value}/{param_value}"
+        asset_url = f"{self.base_url}{asset_type.value}{param_value}"
         await self.download_file(asset_url, local_file_path)
 
         return local_file_path
