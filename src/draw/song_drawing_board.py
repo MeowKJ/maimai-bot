@@ -50,12 +50,12 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the cover. Default is (19, 13).
         """
         # Format the song ID
-
-        cover_img_path = await self.asstes.get(AssetType.COVER, self.song_data.song_id)
-
         try:
+            cover_img_path = await self.asstes.get(
+                AssetType.COVER, self.song_data.song_id
+            )
             cover_img = Image.open(cover_img_path)
-        except FileNotFoundError as e:
+        except Exception as e:
             send_admin_message(f"Error: {e}")
             return
 
