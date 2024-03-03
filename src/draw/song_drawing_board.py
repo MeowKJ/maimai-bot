@@ -1,15 +1,17 @@
 """
 This module contains the SongDrawingBoard class.
 """
+
 import os
 import textwrap
 
 from PIL import Image, ImageDraw
+from src.assets_generator.get_assets import AssetType
 
 from src.draw.drawing_board import DrawingBoard
 from src.utils.qmsg import send_admin_message
-
 from .data_models.song import SongData
+
 
 class SongDrawingBoard(DrawingBoard):
     """
@@ -48,29 +50,15 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the cover. Default is (19, 13).
         """
         # Format the song ID
-        formatted_song_id = str(self.song_data.song_id).zfill(5)
 
-        # Define the possible cover image paths
-        cover_img_path_1 = os.path.join(
-            self.assets_path, "song", "cover", f"1{formatted_song_id[1:]}.png"
-        )
-        cover_img_path_0 = os.path.join(
-            self.assets_path, "song", "cover", f"0{formatted_song_id[1:]}.png"
-        )
+        cover_img_path = self.asstes.get(AssetType.COVER, self.song_data.song_id)
 
-        # Check if either of the cover image paths exists
-        if os.path.exists(cover_img_path_1):
-            cover_img_path = cover_img_path_1
-        elif os.path.exists(cover_img_path_0):
-            cover_img_path = cover_img_path_0
-        else:
-            # Default cover image path if neither exists
-            send_admin_message(f"歌曲封面不存在: {formatted_song_id}, {self.song_data.title}, {cover_img_path_1}, {cover_img_path_0}")
-            cover_img_path = os.path.join(
-                self.assets_path, "song", "cover", "00000.png"
-            )
+        try:
+            cover_img = Image.open(cover_img_path)
+        except FileNotFoundError as e:
+            send_admin_message(f"Error: {e}")
+            return
 
-        cover_img = Image.open(cover_img_path)
         cover_img = cover_img.convert("RGBA")
         # Resize the cover image
         cover_img = cover_img.resize((152, 152))

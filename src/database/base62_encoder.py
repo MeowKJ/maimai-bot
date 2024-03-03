@@ -12,8 +12,8 @@ class Base62Encoder:
             # 尝试将字符串转换为整数
             try:
                 number = int(number)
-            except ValueError:
-                raise ValueError("Base62 encoding expects a numeric input.")
+            except ValueError as exc:
+                raise ValueError("Base62 encoding expects a numeric input.") from exc
 
         if number == 0:
             return Base62Encoder.ALPHABET[0]

@@ -21,7 +21,7 @@ def retry_async(retries=3, delay=2, exceptions=(OperationalError,)):
             while try_count < retries:
                 try:
                     return await func(*args, **kwargs)  # 使用await调用协程函数
-                except exceptions as e:
+                except exceptions:
                     try_count += 1
                     if try_count >= retries:
                         raise
@@ -33,7 +33,6 @@ def retry_async(retries=3, delay=2, exceptions=(OperationalError,)):
 
 
 async def create_tables():
-    # Create tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 

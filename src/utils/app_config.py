@@ -13,6 +13,8 @@ class AppConfig:
         return cls._instance
 
     def __init__(self):
+        self.base_url = ""
+        self.heartbeat_url = ""
         self.qmsg_key = None
         self.bot_config = None
         self.static_config = None
@@ -31,6 +33,8 @@ class AppConfig:
             try:
                 with open(config_path, "r", encoding="utf-8") as file:
                     conf = yaml.safe_load(file)
+                    self.base_url = conf.get("base_url", "")
+                    self.heartbeat_url = conf.get("heartbeat_url", "")
                     self.bot_config = conf.get("bot_config", {})
                     self.static_config = conf.get("static_config", {})
                     self.database_url = conf.get("database_url", "")
