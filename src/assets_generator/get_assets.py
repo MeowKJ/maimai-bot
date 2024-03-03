@@ -1,6 +1,7 @@
 import os
 import aiohttp
 from enum import Enum
+from botpy import logger
 
 
 class AssetType(Enum):
@@ -55,7 +56,7 @@ class Assets:
         """
         从URL下载文件
         """
-        print(f"下载文件：{url}")
+        logger.info(f"下载文件：{url}")
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status != 200:
@@ -66,4 +67,4 @@ class Assets:
                 with open(save_path, "wb") as file:
                     file.write(content)
 
-                print(f"从 {url} 下载并保存文件到 {save_path}")
+                logger.info(f"从 {url} 下载并保存文件到 {save_path}")

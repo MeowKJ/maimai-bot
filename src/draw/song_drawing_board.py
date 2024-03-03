@@ -56,7 +56,9 @@ class SongDrawingBoard(DrawingBoard):
             )
             cover_img = Image.open(cover_img_path)
         except Exception as e:
-            print(f"Error: {e}")
+            from botpy import logger
+
+            logger.info(f"Error: {e}")
             await send_admin_message(f"Error: {e}")
             return
 
