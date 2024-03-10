@@ -9,6 +9,7 @@ from botpy import logger
 from src.draw.generator import generate_b50
 from src.utils.qmsg import send_admin_message
 from src.database.database_manager import create_or_update_user_by_id_name
+from src.common.alias import get_alias_by_id
 
 command_handlers = {}
 
@@ -67,3 +68,17 @@ async def handle_b50_command(self, message: Message):
     if img:
         await message.reply(file_image=str(img))
     return msg
+
+
+@command_handler("/alias")
+async def handle_alias_command(self, message: Message):
+    """
+    alias
+    """
+    message_text = get_raw_message(message.content).replace("/alias", "").strip()
+    if message_text and message_text.isdigit():
+        out = await get_alias_by_id(int(message_text))
+        if out:
+            return f"ID{message_text}的别名有:\n{out}"
+        return f"没有找到ID为{message_text}的曲目别名"
+    return f"{self.robot.name}:请后面输入曲目的ID查询别名哦"

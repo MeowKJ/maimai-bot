@@ -52,7 +52,10 @@ class Assets:
 
         # 如果本地不存在资产，则下载
         asset_url = f"{self.base_url}{asset_type.value}{param_value}"
-        await self.download_file(asset_url, local_file_path)
+        try:
+            await self.download_file(asset_url, local_file_path)
+        except aiohttp.ServerTimeoutError:
+            logger.warning("下载文件超时：%s", asset_url)
 
         return local_file_path
 
@@ -68,7 +71,9 @@ class Assets:
         从URL下载文件
         """
         logger.info("下载文件：%s", url)
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(
+            conn_timeout=5,
+        ) as session:
             async with session.get(url) as response:
                 if response.status != 200:
                     logger.warning("下载文件失败：%s", url)
