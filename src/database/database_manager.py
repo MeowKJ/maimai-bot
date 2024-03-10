@@ -69,7 +69,10 @@ async def update_score_by_id(user_id: str, score: int):
         user = await session.get(User, encoded_id)
         if user:
             user.score = score
-            user.score_update_count += 1  # 增加计数
+            if user.score_update_count is not None:
+                user.score_update_count += 1  # 增加计数
+            else:
+                user.score_update_count = 1
             await session.commit()
             return user
         return None

@@ -1,0 +1,17 @@
+# config.yml
+debug: True
+base_url: ""
+heartbeat_url: ""
+database_url: ""
+qmsg_key: ""
+bot_config:
+  appid: ""
+  secret: ""
+  api_secret: ""
+  is_sandbox: False
+static_config:
+  assets_path: "./static/mai"
+  font_path: "./static/fonts"
+  en_font: "BungeeInline-Regular.ttf"
+  jp_font: "CusterMagic-Regular.ttf"
+  mix_font: "happy.ttf"

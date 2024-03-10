@@ -1,7 +1,14 @@
 """
 图片处理工具。
 """
+
+import asyncio
+import os
+import subprocess
+import aiohttp
+
 from PIL import Image, ImageDraw
+from io import BytesIO
 
 
 def draw_rainbow_text(img, position, text, font, gradient_file):
@@ -75,3 +82,103 @@ def circle_corner(img, radii=30, border_width=6):
     )
 
     return img
+
+
+async def compress_png(fp, output, force=True, quality=None):
+    """
+    Compresses a PNG file asynchronously.
+
+    Args:
+        fp (str): The file path of the original PNG file.
+        output (str): The file path for the compressed PNG file.
+        force (bool, optional): Whether to force compression. Defaults to True.
+        quality (int or str, optional): Compression quality parameter. Defaults to None.
+
+    Returns:
+        float: Compression ratio percentage.
+    """
+    if not os.path.exists(fp):
+        raise FileNotFoundError(f"File not found: {fp}")
+
+    force_command = "-f" if force else ""
+    quality_command = ""
+
+    if quality and isinstance(quality, int):
+        quality_command = f"--quality {quality}"
+    if quality and isinstance(quality, str):
+        quality_command = f"--quality {quality}"
+
+    command = (
+        f"pngquant {fp} "
+        f"--skip-if-larger {force_command} "
+        f"{quality_command} "
+        f"--output {output}"
+    )
+
+    try:
+        process = await asyncio.create_subprocess_shell(
+            command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+        _, _ = await process.communicate()
+
+        # 获取原始图像大小
+        original_size = os.path.getsize(fp)
+
+        # 获取压缩后文件的大小
+        compressed_size = os.path.getsize(output)
+
+        # 计算压缩比
+        compression_ratio = (1 - compressed_size / original_size) * 100
+        # 检查命令是否成功执行
+        if process.returncode != 0:
+            raise subprocess.CalledProcessError(process.returncode, command)
+
+        return compression_ratio
+        # 剩下的代码...
+    except asyncio.CancelledError as exc:
+        # 处理异步任务被取消的情况
+        raise exc from None
+    except Exception as e:
+        # 处理其他异常
+        raise RuntimeError(f"An error occurred: {e}") from e
+
+
+async def download_avatar(session, avatar_url):
+    """
+    下载头像图片。
+
+    Args:
+        session (aiohttp.ClientSession): Aiohttp 客户端会话对象。
+        avatar_url (str): 头像图片的 URL。
+
+    Returns:
+        bytes: 下载的头像图片数据。
+    """
+    async with session.get(avatar_url) as response:
+        return await response.read()
+
+
+async def process_avatar(avatar_url):
+    """
+    处理头像图片。
+
+    Args:
+        avatar_url (str): 头像图片的 URL。
+
+    Returns:
+        PIL.Image.Image: 处理后的头像图片对象。
+    """
+    async with aiohttp.ClientSession() as session:
+        avatar_data = await download_avatar(session, avatar_url)
+
+    # Open the avatar image using PIL
+    avatar_image = Image.open(BytesIO(avatar_data))
+
+    # Convert the image to RGB mode (remove transparency)
+    avatar_image = avatar_image.convert("RGBA")
+
+    avatar_image = avatar_image.resize((185, 185))
+
+    # Apply circle corner to the avatar
+    avatar_image = circle_corner(avatar_image, radii=15)
+    return avatar_image

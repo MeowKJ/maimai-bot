@@ -1,3 +1,7 @@
+"""
+app_config.py - The configuration file for the app.
+"""
+
 import sys
 import os
 import yaml
@@ -5,6 +9,8 @@ from botpy import logger
 
 
 class AppConfig:
+    """ """
+
     _instance = None
 
     def __new__(cls, *args, **kwargs):
