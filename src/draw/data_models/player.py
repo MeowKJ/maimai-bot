@@ -82,17 +82,23 @@ class Player:
             headers=auth_headers,
         ) as resp:
             if resp.status == 404:
-                return resp.status, "未能找到您的数据, 请检查与落雪查分器中绑定的QQ号是否一致"
+                return (
+                    resp.status,
+                    "未能找到您的数据, 请检查与落雪查分器中绑定的QQ号是否一致",
+                )
             elif resp.status != 200:
                 return resp.status, "暂时无法查询到您的b50"
             obj = await resp.json()
             if obj["code"] == 403:
                 return 403, "发现没有开启选项[允许读取玩家信息]"
             elif obj["code"] == 404:
-                return 404, f"未能找到[{self.username}]的数据, 请检查落雪查分器中绑定的QQ号是否一致"
+                return (
+                    404,
+                    f"未能找到[{self.username}]的数据, 请检查落雪查分器中绑定的QQ号是否一致",
+                )
             elif obj["code"] != 200:
                 return obj["code"], "暂时无法查询到您的b50"
-
+            print(obj)
             self.nickname = obj["data"].get("name")
             self.rating = obj["data"].get("rating")
             self.class_rank = obj["data"].get("class_rank")
@@ -100,8 +106,11 @@ class Player:
             self.star = obj["data"].get("star")
             self.avatar_url = obj["data"].get("icon_url")
             friend_code = obj["data"].get("friend_code")
-            self.name_plate = obj["data"]["name_plate"].get("id") if "name_plate" in obj["data"] else None
-
+            self.name_plate = (
+                obj["data"]["name_plate"].get("id")
+                if "name_plate" in obj["data"]
+                else None
+            )
 
         async with aiohttp.request(
             "GET",
@@ -109,7 +118,10 @@ class Player:
             headers=auth_headers,
         ) as resp:
             if resp.status == 404:
-                return resp.status, "未能找到您的数据, 请检查与落雪查分器中绑定的QQ号是否一致"
+                return (
+                    resp.status,
+                    "未能找到您的数据, 请检查与落雪查分器中绑定的QQ号是否一致",
+                )
             elif resp.status != 200:
                 return resp.status, "暂时无法查询到您的b50"
             obj = await resp.json()

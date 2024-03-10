@@ -2,12 +2,11 @@
 This module provides the DrawingBoard class for creating images.
 """
 
-import os
-
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 from src.utils.app_config import config
-from src.assets_generator.get_assets import Assets, AssetType
+from src.assets_generator.get_assets import Assets
 
 
 class DrawingBoard:
@@ -28,7 +27,6 @@ class DrawingBoard:
         - resize (tuple, optional): The target size to resize the main image. Defaults to None.
         """
         self.asstes = Assets(config.base_url, config.static_config["assets_path"])
-        self.assets_path = config.static_config["assets_path"]
         self.font_path = config.static_config["font_path"]
         self.en_font = config.static_config["en_font"]
         self.jp_font = config.static_config["jp_font"]
@@ -66,7 +64,7 @@ class DrawingBoard:
         Returns:
         - PIL.ImageFont.FreeTypeFont: The font object.
         """
-        return ImageFont.truetype(os.path.join(self.font_path, font), size=size)
+        return ImageFont.truetype(str(Path(self.font_path, font)), size=size)
 
     def save(self, path):
         """

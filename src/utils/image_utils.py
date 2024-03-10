@@ -174,11 +174,4 @@ async def process_avatar(avatar_url):
     # Open the avatar image using PIL
     avatar_image = Image.open(BytesIO(avatar_data))
 
-    # Convert the image to RGB mode (remove transparency)
-    avatar_image = avatar_image.convert("RGBA")
-
-    avatar_image = avatar_image.resize((185, 185))
-
-    # Apply circle corner to the avatar
-    avatar_image = circle_corner(avatar_image, radii=15)
     return avatar_image

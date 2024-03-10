@@ -2,14 +2,12 @@
 This module contains the SongDrawingBoard class.
 """
 
-import os
 import textwrap
 
 from PIL import Image, ImageDraw
 from src.assets_generator.get_assets import AssetType
 
 from src.draw.drawing_board import DrawingBoard
-from src.utils.qmsg import send_admin_message
 from .data_models.song import SongData
 
 
@@ -50,17 +48,8 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the cover. Default is (19, 13).
         """
         # Format the song ID
-        try:
-            cover_img_path = await self.asstes.get(
-                AssetType.COVER, self.song_data.song_id
-            )
-            cover_img = Image.open(cover_img_path)
-        except Exception as e:
-            from botpy import logger
-
-            logger.info(f"Error: {e}")
-            await send_admin_message(f"Error: {e}")
-            return
+        cover_img_path = await self.asstes.get(AssetType.COVER, self.song_data.song_id)
+        cover_img = Image.open(cover_img_path)
 
         cover_img = cover_img.convert("RGBA")
         # Resize the cover image
@@ -75,9 +64,10 @@ class SongDrawingBoard(DrawingBoard):
         Args:
         - position: The coordinates for drawing the type. Default is (6, 3).
         """
-        type_img_path = os.path.join(
-            self.assets_path, "song", f"{self.song_data.type.lower()}.png"
+        type_img_path = self.asstes.generate_assets_path(
+            f"{self.song_data.type.lower()}.png"
         )
+
         type_img = Image.open(type_img_path)
         type_img = type_img.resize((85, 22))
         self.main_img.paste(type_img, position, type_img)
@@ -90,7 +80,7 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the rank. Default is (130, 0).
         - font_size: The font size for the rank. Default is 18.
         """
-        ra_plate_img_path = os.path.join(self.assets_path, "song", "ra_base.png")
+        ra_plate_img_path = self.asstes.generate_assets_path("ra_base.png")
         ra_plate_img = Image.open(ra_plate_img_path)
         ra_plate_img = ra_plate_img.resize((60, 32))
 
@@ -107,7 +97,7 @@ class SongDrawingBoard(DrawingBoard):
         )
         self.main_img.paste(ra_plate_img, position, ra_plate_img)
 
-    def draw_song_rate(self, position=(10, 210), target_height=32):
+    async def draw_song_rate(self, position=(10, 210), target_height=32):
         """
         Draw the song score.
 
@@ -116,8 +106,8 @@ class SongDrawingBoard(DrawingBoard):
         - target_height: The target height for the score image. Default is 32.
         """
         if self.song_data.rating_icon:
-            rate_img_path = os.path.join(
-                self.assets_path, "song", "rank", f"{self.song_data.rating_icon}.png"
+            rate_img_path = await self.asstes.get(
+                AssetType.RANK, self.song_data.rating_icon
             )
             rate_img = Image.open(rate_img_path)
             aspect_ratio = rate_img.width / rate_img.height
@@ -185,7 +175,7 @@ class SongDrawingBoard(DrawingBoard):
             stroke_fill=(0, 0, 0),
         )
 
-    def draw_song_badge(self, position=(135, 125)):
+    async def draw_song_badge(self, position=(135, 125)):
         """
         Draw the song badges.
 
@@ -193,19 +183,22 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the badges. Default is (135, 125).
         """
         x, y = position
+
         if self.song_data.fc:
-            fc_img_path = os.path.join(
-                self.assets_path, "song", "badges", f"{self.song_data.fc}_s.png"
-            )
+            fc_img_path = await self.asstes.get(AssetType.BADGE, f"{self.song_data.fc}")
             fc_img = Image.open(fc_img_path)
+            fc_img = fc_img.resize(
+                (35, 35), resample=Image.Resampling.NEAREST
+            )  # Using BILINEAR filter here
             self.paste(fc_img, (x, y))
             x -= 35
 
         if self.song_data.fs:
-            fs_img_path = os.path.join(
-                self.assets_path, "song", "badges", f"{self.song_data.fs}_s.png"
-            )
+            fs_img_path = await self.asstes.get(AssetType.BADGE, f"{self.song_data.fs}")
             fs_img = Image.open(fs_img_path)
+            fs_img = fs_img.resize(
+                (35, 35), resample=Image.Resampling.NEAREST
+            )  # Using BILINEAR filter here
             self.paste(fs_img, (x, y))
 
     async def draw(self):
@@ -229,14 +222,14 @@ class SongDrawingBoard(DrawingBoard):
         self.draw_song_ds()
 
         # Draw the song rating
-        self.draw_song_rate()
+        await self.draw_song_rate()
 
         if self.is_draw_title:
             # Draw the song title
             self.draw_song_title()
 
         # Draw the song badges
-        self.draw_song_badge()
+        await self.draw_song_badge()
 
         # Draw the song achievement
         self.draw_song_achievement()

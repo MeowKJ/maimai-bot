@@ -9,7 +9,9 @@ from botpy import logger
 
 
 class AppConfig:
-    """ """
+    """
+    AppConfig
+    """
 
     _instance = None
 

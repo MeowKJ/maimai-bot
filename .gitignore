@@ -11,3 +11,5 @@ test.py
 config.yaml
 *.zip
 *.exe
+photoshop/
+*.psd

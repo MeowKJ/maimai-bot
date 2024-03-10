@@ -2,10 +2,10 @@
 This module contains the functions for generating maimai images.
 """
 
-import os
 import time
-from botpy import logger
 import aiohttp
+from pathlib import Path
+from botpy import logger
 
 from src.database.database_manager import (
     get_name_score_by_id,
@@ -17,11 +17,14 @@ from src.utils.common_utils import (
     generate_boolean_with_probability,
     is_valid_luoxue_username,
 )
-from src.utils.compress_utils import compress_png
+from src.utils.image_utils import compress_png
 from .data_models.player import Player
 
 
 async def heartbeat_request(url):
+    """
+    heartbeat request
+    """
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status == 200:
@@ -34,7 +37,7 @@ async def generate_b50(
     userid,
     avatar_url,
     params,
-    output_path=os.path.join(config.static_config["assets_path"], "images"),
+    output_path=Path(config.static_config["assets_path"], "images"),
 ):
     """
     Generate a maimai image with b50 information.
@@ -52,6 +55,7 @@ async def generate_b50(
     Raises:
         int: The HTTP status code indicating the result of the generation process.
     """
+    logger.debug("开始生成图片")
     time_start = time.time()
     username, score = await get_name_score_by_id(userid)
 
@@ -77,34 +81,38 @@ async def generate_b50(
     )
 
     if is_valid_luoxue_username(username):
+        logger.debug("使用落雪查分器")
         code, msg = await player.fetch_luoxue()
         msg = "[落雪咖啡屋]" + msg
     else:
+        logger.debug("使用水鱼查分器")
         code, msg = await player.fetch_divingfish()
         msg = "[水鱼查分器]" + msg
     if code != 200:
         return code, msg, None
+    logger.debug("获取玩家信息 -> %s", msg)
 
-    # 获取目标路径
-    target_path = os.path.join(
+    target_path = Path(
         output_path, f'{username}{"_origin" if is_use_origin else ""}.png'
     )
-    target_path = os.path.normpath(target_path)
+    target_path = Path(target_path)
 
     # 是否强制生成
-    if not is_force_generate and os.path.exists(target_path) and score == player.rating:
+    if not is_force_generate and target_path.exists() and score == player.rating:
         return 201, "你的DX Rating没有变化", target_path
 
+    logger.debug("更新玩家rating")
     # 更新玩家rating
     await update_score_by_id(userid, player.rating)
 
     # 准备背景图片
-    main_img_path = os.path.join(
+    main_img_path = Path(
         config.static_config["assets_path"],
-        "img",
+        "basic",
         "main2.png" if generate_boolean_with_probability(10) else "main1.png",
     )
 
+    logger.debug("开始绘画")
     # 开始绘画
     maimai_pic = MaimaiDrawingBoard(
         main_img_path=main_img_path,
@@ -114,11 +122,12 @@ async def generate_b50(
     )
     await maimai_pic.draw()
     maimai_pic.main_img.convert("RGB")
-
-    origin_path = os.path.join(output_path, f"{username}_origin.png")
+    if not output_path.exists():
+        output_path.mkdir(parents=True)
+    origin_path = Path(output_path, f"{username}_origin.png")
     maimai_pic.save(origin_path)
 
-    compress_path = os.path.join(output_path, f"{username}.png")
+    compress_path = Path(output_path, f"{username}.png")
 
     compression_ratio = await compress_png(origin_path, compress_path)
 

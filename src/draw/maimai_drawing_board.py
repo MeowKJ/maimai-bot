@@ -2,10 +2,9 @@
 A module for drawing the Maimai game board.
 """
 
-import os.path
 import random
 from datetime import datetime
-
+from pathlib import Path
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
@@ -13,6 +12,8 @@ from src.draw.profile_drawing_board import ProfileDrawingBoard
 from src.draw.song_drawing_board import SongDrawingBoard
 from src.utils.common_utils import get_color_code_from_score
 from src.utils.image_utils import draw_rainbow_text
+from src.assets_generator.get_assets import AssetType
+
 from .data_models.player import Player
 
 
@@ -73,12 +74,11 @@ class MaimaiDrawingBoard(DrawingBoard):
                 base_color = "_r"
             elif song_data.achievements >= 99:
                 base_color = "_g"
-            main_img_path = os.path.join(
-                self.assets_path,
-                "song",
-                "base",
-                f"{song_data.level_index}{base_color}.png",
+
+            main_img_path = self.asstes.generate_assets_path(
+                "base", f"{song_data.level_index}{base_color}.png"
             )
+
             song_plate = SongDrawingBoard(main_img_path, song_data, self.is_draw_title)
             await song_plate.draw()
             self.paste(song_plate, (position_x, position_y))
@@ -100,9 +100,7 @@ class MaimaiDrawingBoard(DrawingBoard):
         """
         # Implement the content of the draw_character method
         # Draw the rocket
-
-        folder_path = os.path.join(self.assets_path, "characters")
-        image_path = os.path.join(folder_path, "rocket_small.png")
+        image_path = self.asstes.generate_assets_path("characters", "rocket_small.png")
         character_img = Image.open(image_path)
         self.main_img.paste(character_img, position, character_img)
 
@@ -115,9 +113,10 @@ class MaimaiDrawingBoard(DrawingBoard):
                 Defaults to (1145, 1725).
         """
         # Implement the content of the draw_secondary_character method
-        folder_path = os.path.join(self.assets_path, "characters")
         random_number = random.randint(0, 16)
-        image_path = os.path.join(folder_path, f"yj{random_number}.png")
+        image_path = self.asstes.generate_assets_path(
+            "characters", f"yj{random_number}.png"
+        )
         character_img = Image.open(image_path)
 
         self.main_img.paste(character_img, position, character_img)
@@ -137,23 +136,22 @@ class MaimaiDrawingBoard(DrawingBoard):
                 Defaults to (120, 75).
         """
         # Implement the content of the draw_plate method
-        profile_plate_main_img_dir = os.path.join(self.assets_path, "plate", "raw")
-        if isinstance(self.player.name_plate, int) and os.path.exists(
-            os.path.join(
-                self.assets_path,
-                "plate",
-                "raw",
-                f"UI_Plate_{self.player.name_plate:06d}.png",
-            )
-        ):
-            profile_plate_main_img_file = f"UI_Plate_{self.player.name_plate:06d}.png"
 
+        if isinstance(self.player.name_plate, int):
+            plate_filepath = await self.asstes.get(
+                AssetType.PLATE, self.player.name_plate
+            )
         else:
-            profile_plate_main_img_list = os.listdir(profile_plate_main_img_dir)
-            profile_plate_main_img_file = random.choice(profile_plate_main_img_list)
+            plate_file_list = [
+                x for x in Path(self.asstes.assets_folder, "plate").glob("*.png")
+            ]
+            if len(plate_file_list) > 10:
+                plate_filepath = str(random.choice(plate_filepath))
+            else:
+                plate_filepath = await self.asstes.get(AssetType.PLATE, 0)
 
         profile_plate = ProfileDrawingBoard(
-            os.path.join(profile_plate_main_img_dir, profile_plate_main_img_file),
+            plate_filepath,
             rating,
             name,
             avatar,
@@ -179,7 +177,7 @@ class MaimaiDrawingBoard(DrawingBoard):
         font_size = 36
 
         # Create a blank image for drawing
-        nv_img = Image.open(os.path.join(self.assets_path, "img", "title_base.png"))
+        nv_img = Image.open(self.asstes.generate_assets_path("title_base.png"))
         draw_f = ImageDraw.Draw(nv_img)
 
         # Add rainbow effect for scores greater than 15000
@@ -189,7 +187,7 @@ class MaimaiDrawingBoard(DrawingBoard):
                 (x, y),
                 f"B15 -> {b15_scores}",
                 self.get_font(font_size),
-                os.path.join(self.assets_path, "img", "gradient.png"),
+                self.asstes.generate_assets_path("gradient.png"),
             )
         else:
             draw_f.text(
@@ -207,7 +205,7 @@ class MaimaiDrawingBoard(DrawingBoard):
                 (x + 270, y),
                 f"B35 -> {b35_scores}",
                 self.get_font(font_size),
-                os.path.join(self.assets_path, "img", "gradient.png"),
+                self.asstes.generate_assets_path("gradient.png"),
             )
         else:
             draw_f.text(
@@ -228,15 +226,15 @@ class MaimaiDrawingBoard(DrawingBoard):
         # Implement the content of the draw_footer method
         # Draw the footer
         footer_img_list = ["UI_footer1.png", "UI_footer2.png", "UI_footer3.png"]
-        footer_img_path = random.choice(footer_img_list)
-        footer_img = Image.open(os.path.join(self.assets_path, "img", footer_img_path))
+        footer_img_name = random.choice(footer_img_list)
+        footer_img = Image.open(self.asstes.generate_assets_path(footer_img_name))
         draw_f = ImageDraw.Draw(footer_img)
         font = self.get_font(30)
 
-        if footer_img_path == "UI_footer2.png":
+        if footer_img_name == "UI_footer2.png":
             x = 60
             y = 100
-        elif footer_img_path == "UI_footer3.png":
+        elif footer_img_name == "UI_footer3.png":
             x = 65
             y = 75
         else:

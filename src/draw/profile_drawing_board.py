@@ -1,14 +1,18 @@
 """
 This module represents a profile drawing board.
 """
-import os
 
 from PIL import Image, ImageDraw
 
 from src.draw.drawing_board import DrawingBoard
-from src.utils.avatar_utils import process_avatar
-from src.utils.color_utils import get_img_code_from_dx_rating
-from src.utils.common_utils import has_only_common_characters
+from src.utils.common_utils import (
+    has_only_common_characters,
+    get_img_code_from_dx_rating,
+)
+
+from src.utils.image_utils import process_avatar, circle_corner
+
+from src.assets_generator.get_assets import AssetType
 
 
 class ProfileDrawingBoard(DrawingBoard):
@@ -33,7 +37,7 @@ class ProfileDrawingBoard(DrawingBoard):
         self.rating = int(rating)
         self.name_plate = name_plate
 
-    def draw_rating_plate(self, position=(200, 17)):
+    async def draw_rating_plate(self, position=(200, 17)):
         """
         Draw the rating plate on the profile drawing board.
 
@@ -42,8 +46,7 @@ class ProfileDrawingBoard(DrawingBoard):
         """
         # Get the rating plate image
         rating_plate_img = Image.open(
-            os.path.join(
-                self.assets_path,
+            self.asstes.generate_assets_path(
                 "dx_rating",
                 f"UI_CMN_DXRating_S_{get_img_code_from_dx_rating(self.rating)}_waifu2x_2x_png.png",
             )
@@ -69,18 +72,31 @@ class ProfileDrawingBoard(DrawingBoard):
         Args:
             position (tuple, optional): The position of the avatar. Defaults to (7, 8).
         """
-        if self.avatar:
-            avatar_pic = await process_avatar(self.avatar)
-            self.paste(avatar_pic, position)
 
-    def draw_name_plate(self, position=(200, 99)):
+        if self.avatar:
+            if self.avatar.startswith("http"):
+                avatar_image = await process_avatar(self.avatar)
+            else:
+                avatar_path = await self.asstes.get(AssetType.AVATAR, self.avatar)
+                avatar_image = Image.open(avatar_path)
+
+            # Convert the image to RGB mode (remove transparency)
+            avatar_image = avatar_image.convert("RGBA")
+
+            avatar_image = avatar_image.resize((185, 185))
+
+            # Apply circle corner to the avatar
+            avatar_image = circle_corner(avatar_image, radii=15)
+            self.paste(avatar_image, position)
+
+    async def draw_name_plate(self, position=(200, 99)):
         """
         Draw the name plate on the profile drawing board.
 
         Args:
             position (tuple, optional): The position of the name plate. Defaults to (120, 75).
         """
-        name_plate_img = Image.open(os.path.join(self.assets_path, "img", "name.png"))
+        name_plate_img = Image.open(self.asstes.generate_assets_path("name.png"))
         name_plate_draw = ImageDraw.Draw(name_plate_img)
         name = str(self.name)  # Fix: Replace 'name' with 'self.name'
         # Choose font based on the name content
@@ -100,7 +116,7 @@ class ProfileDrawingBoard(DrawingBoard):
         Returns:
             Image: The profile drawing board image.
         """
-        self.draw_rating_plate()
-        self.draw_name_plate()
+        await self.draw_rating_plate()
+        await self.draw_name_plate()
         await self.draw_avatar()
         return self.main_img
