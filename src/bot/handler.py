@@ -5,11 +5,20 @@ handler.py 中的 command_handler 装饰器用于注册命令处理函数
 """
 
 from botpy.message import Message
+from botpy import logger
 from src.draw.generator import generate_b50
 from src.utils.qmsg import send_admin_message
 from src.database.database_manager import create_or_update_user_by_id_name
 
-from src.bot.client import get_raw_message, MyClient, command_handlers
+command_handlers = {}
+
+
+def get_raw_message(message):
+    """
+    get_raw_message
+    """
+    logger.debug("get_raw_message: %s", message)
+    return message.split(">")[1] if ">" in message else message
 
 
 def command_handler(command):
@@ -33,7 +42,7 @@ def command_handler(command):
 
 
 @command_handler("/bind")
-async def handle_bind_command(self: MyClient, message: Message):
+async def handle_bind_command(self, message: Message):
     """
     bind
     """
@@ -47,13 +56,14 @@ async def handle_bind_command(self: MyClient, message: Message):
 
 
 @command_handler("/b50")
-async def handle_b50_command(self: MyClient, message: Message):
+async def handle_b50_command(self, message: Message):
     """
     b50
     """
+    logger.debug("%s", self.robot.name)
     message_text = get_raw_message(message.content).replace("/b50", "").strip()
     params = list(message_text)
     _, msg, img = await generate_b50(message.author.id, message.author.avatar, params)
     if img:
-        await message.reply(file_image=img)
-    return f"[{self.robot.name}]" + msg
+        await message.reply(file_image=str(img))
+    return msg

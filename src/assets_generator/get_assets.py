@@ -71,7 +71,8 @@ class Assets:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status != 200:
-                    raise ValueError(f"请求失败，状态码为 {response.status}")
+                    logger.warning("下载文件失败：%s", url)
+                    return
                 # 确保保存文件的文件夹存在
                 save_folder = Path(save_path).parent
                 if not save_folder.exists():

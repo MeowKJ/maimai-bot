@@ -5,18 +5,9 @@ client.py
 import botpy
 from botpy import logger
 from botpy.message import Message, DirectMessage
-
 from src.database.database_manager import create_tables
 
-command_handlers = {}
-
-
-def get_raw_message(message):
-    """
-    get_raw_message
-    """
-    print(message)
-    return message.split(">")[1] if ">" in message else message
+from src.bot.handler import command_handlers
 
 
 class MyClient(botpy.Client):

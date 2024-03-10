@@ -120,6 +120,7 @@ async def generate_b50(
         is_draw_title=False,
         is_compress_img=True,
     )
+
     await maimai_pic.draw()
     maimai_pic.main_img.convert("RGB")
     if not output_path.exists():
