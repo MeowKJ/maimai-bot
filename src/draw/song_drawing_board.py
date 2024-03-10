@@ -1,15 +1,17 @@
 """
 This module contains the SongDrawingBoard class.
 """
+
 import os
 import textwrap
 
 from PIL import Image, ImageDraw
+from src.assets_generator.get_assets import AssetType
 
 from src.draw.drawing_board import DrawingBoard
 from src.utils.qmsg import send_admin_message
-
 from .data_models.song import SongData
+
 
 class SongDrawingBoard(DrawingBoard):
     """
@@ -40,7 +42,7 @@ class SongDrawingBoard(DrawingBoard):
 
         super().__init__(main_img_path, resize=(190, 252))
 
-    def draw_song_cover(self, position=(19, 13)):
+    async def draw_song_cover(self, position=(19, 13)):
         """
         Draw the song cover.
 
@@ -48,29 +50,18 @@ class SongDrawingBoard(DrawingBoard):
         - position: The coordinates for drawing the cover. Default is (19, 13).
         """
         # Format the song ID
-        formatted_song_id = str(self.song_data.song_id).zfill(5)
-
-        # Define the possible cover image paths
-        cover_img_path_1 = os.path.join(
-            self.assets_path, "song", "cover", f"1{formatted_song_id[1:]}.png"
-        )
-        cover_img_path_0 = os.path.join(
-            self.assets_path, "song", "cover", f"0{formatted_song_id[1:]}.png"
-        )
-
-        # Check if either of the cover image paths exists
-        if os.path.exists(cover_img_path_1):
-            cover_img_path = cover_img_path_1
-        elif os.path.exists(cover_img_path_0):
-            cover_img_path = cover_img_path_0
-        else:
-            # Default cover image path if neither exists
-            send_admin_message(f"歌曲封面不存在: {formatted_song_id}, {self.song_data.title}, {cover_img_path_1}, {cover_img_path_0}")
-            cover_img_path = os.path.join(
-                self.assets_path, "song", "cover", "00000.png"
+        try:
+            cover_img_path = await self.asstes.get(
+                AssetType.COVER, self.song_data.song_id
             )
+            cover_img = Image.open(cover_img_path)
+        except Exception as e:
+            from botpy import logger
 
-        cover_img = Image.open(cover_img_path)
+            logger.info(f"Error: {e}")
+            await send_admin_message(f"Error: {e}")
+            return
+
         cover_img = cover_img.convert("RGBA")
         # Resize the cover image
         cover_img = cover_img.resize((152, 152))
@@ -217,7 +208,7 @@ class SongDrawingBoard(DrawingBoard):
             fs_img = Image.open(fs_img_path)
             self.paste(fs_img, (x, y))
 
-    def draw(self):
+    async def draw(self):
         """
         Draw the song card.
 
@@ -226,7 +217,7 @@ class SongDrawingBoard(DrawingBoard):
         """
 
         # Draw the song cover
-        self.draw_song_cover()
+        await self.draw_song_cover()
 
         # Draw the song type
         self.draw_song_type()

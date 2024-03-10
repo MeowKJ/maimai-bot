@@ -43,7 +43,9 @@ class MaimaiDrawingBoard(DrawingBoard):
         self.is_draw_title = is_draw_title
         self.is_compress_img = is_compress_img
 
-    def draw_songs(self, is_b15, position_b15=(100, 2050), position_b35=(100, 405)):
+    async def draw_songs(
+        self, is_b15, position_b15=(100, 2050), position_b35=(100, 405)
+    ):
         """
         Draw song information on the main image.
 
@@ -78,7 +80,7 @@ class MaimaiDrawingBoard(DrawingBoard):
                 f"{song_data.level_index}{base_color}.png",
             )
             song_plate = SongDrawingBoard(main_img_path, song_data, self.is_draw_title)
-            song_plate.draw()
+            await song_plate.draw()
             self.paste(song_plate, (position_x, position_y))
             x = x + 1
             position_x = position_x + 203
@@ -289,8 +291,8 @@ class MaimaiDrawingBoard(DrawingBoard):
             self.player.avatar_url,
             self.player.name_plate,
         )
-        self.draw_songs(True)
-        self.draw_songs(False)
+        await self.draw_songs(True)
+        await self.draw_songs(False)
         self.draw_badge()
         self.draw_score_nv(
             self.player.song_data_b15_total, self.player.song_data_b35_total

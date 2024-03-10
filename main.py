@@ -1,10 +1,15 @@
+import threading
+import requests
+import time
 import os
 
 import botpy
+
 from botpy.logging import DEFAULT_FILE_HANDLER
 
 from src.bot.client import MyClient
 from src.utils.app_config import config
+
 
 if __name__ == "__main__":
     DEFAULT_FILE_HANDLER["filename"] = os.path.join(os.getcwd(), "log", "%(name)s.log")
@@ -16,4 +21,5 @@ if __name__ == "__main__":
         timeout=20,
         ext_handlers=DEFAULT_FILE_HANDLER,
     )
+
     client.run(appid=config.bot_config["appid"], secret=config.bot_config["secret"])

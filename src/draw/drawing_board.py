@@ -1,15 +1,16 @@
 """
 This module provides the DrawingBoard class for creating images.
 """
+
 import os
 
 from PIL import Image, ImageDraw, ImageFont
 
 from src.utils.app_config import config
+from src.assets_generator.get_assets import Assets, AssetType
 
 
 class DrawingBoard:
-
     """
     Represents a drawing board for creating images.
     """
@@ -26,6 +27,7 @@ class DrawingBoard:
         - main_img_path (str): The path to the main image file.
         - resize (tuple, optional): The target size to resize the main image. Defaults to None.
         """
+        self.asstes = Assets(config.base_url, config.static_config["assets_path"])
         self.assets_path = config.static_config["assets_path"]
         self.font_path = config.static_config["font_path"]
         self.en_font = config.static_config["en_font"]
