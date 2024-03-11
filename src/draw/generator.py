@@ -3,10 +3,11 @@ This module contains the functions for generating maimai images.
 """
 
 import time
-import aiohttp
 from pathlib import Path
-from botpy import logger
 
+import aiohttp
+from botpy import logger
+from src.database.base62_encoder import Base62Encoder
 from src.database.database_manager import (
     get_name_score_by_id,
     update_score_by_id,
@@ -92,8 +93,10 @@ async def generate_b50(
         return code, msg, None
     logger.debug("获取玩家信息 -> %s", msg)
 
+    filename = Base62Encoder.encode_string(username)
+
     target_path = Path(
-        output_path, f'{username}{"_origin" if is_use_origin else ""}.png'
+        output_path, f'{filename}{"_origin" if is_use_origin else ""}.png'
     )
     target_path = Path(target_path)
 
@@ -125,10 +128,11 @@ async def generate_b50(
     maimai_pic.main_img.convert("RGB")
     if not output_path.exists():
         output_path.mkdir(parents=True)
-    origin_path = Path(output_path, f"{username}_origin.png")
+
+    origin_path = Path(output_path, f"{filename}_origin.png")
     maimai_pic.save(origin_path)
 
-    compress_path = Path(output_path, f"{username}.png")
+    compress_path = Path(output_path, f"{filename}.png")
 
     compression_ratio = await compress_png(origin_path, compress_path)
 

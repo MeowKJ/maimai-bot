@@ -1,4 +1,3 @@
-# base62_encoder.py - Base62 encoder and decoder
 import string
 
 
@@ -7,21 +6,24 @@ class Base62Encoder:
     BASE = 62
 
     @staticmethod
-    def encode(number):
-        if isinstance(number, str):
+    def encode_number(n):
+        if isinstance(n, str):
             # 尝试将字符串转换为整数
-            try:
-                number = int(number)
-            except ValueError as exc:
-                raise ValueError("Base62 encoding expects a numeric input.") from exc
-
-        if number == 0:
+            n = int(n)
+        if n == 0:
             return Base62Encoder.ALPHABET[0]
         result = ""
-        while number:
-            number, rem = divmod(number, Base62Encoder.BASE)
+        while n:
+            n, rem = divmod(n, Base62Encoder.BASE)
             result = Base62Encoder.ALPHABET[rem] + result
         return result
+
+    @staticmethod
+    def encode_string(s):
+        encoded_str = ""
+        for char in s:
+            encoded_str += Base62Encoder.encode_number(ord(char))
+        return encoded_str
 
     @staticmethod
     def decode(encoded_str):

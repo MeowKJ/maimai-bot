@@ -39,7 +39,7 @@ async def create_tables():
 
 @retry_async(retries=3, delay=2, exceptions=(OperationalError,))
 async def get_name_score_by_id(user_id: str):
-    encoded_id = Base62Encoder.encode(user_id)
+    encoded_id = Base62Encoder.encode_number(user_id)
     async with AsyncSessionLocal() as session:
         user = await session.get(User, encoded_id)
         if user:
@@ -49,7 +49,7 @@ async def get_name_score_by_id(user_id: str):
 
 @retry_async(retries=3, delay=2, exceptions=(OperationalError,))
 async def create_or_update_user_by_id_name(user_id: str, name: str):
-    encoded_id = Base62Encoder.encode(user_id)
+    encoded_id = Base62Encoder.encode_number(user_id)
     async with AsyncSessionLocal() as session:
         user = await session.get(User, encoded_id)
         if not user:
@@ -63,7 +63,7 @@ async def create_or_update_user_by_id_name(user_id: str, name: str):
 
 @retry_async(retries=3, delay=2, exceptions=(OperationalError,))
 async def update_score_by_id(user_id: str, score: int):
-    encoded_id = Base62Encoder.encode(user_id)
+    encoded_id = Base62Encoder.encode_number(user_id)
     async with AsyncSessionLocal() as session:
         user = await session.get(User, encoded_id)
         if user:
