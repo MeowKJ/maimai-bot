@@ -146,7 +146,7 @@ class MaimaiDrawingBoard(DrawingBoard):
                 x for x in Path(self.asstes.assets_folder, "plate").glob("*.png")
             ]
             if len(plate_file_list) > 10:
-                plate_filepath = str(random.choice(plate_filepath))
+                plate_filepath = str(random.choice(plate_file_list))
             else:
                 plate_filepath = await self.asstes.get(AssetType.PLATE, 0)
 
