@@ -7,8 +7,9 @@ import asyncio
 import random
 import time
 import tempfile
-import aiohttp
 from collections import Counter
+
+import aiohttp
 
 from botpy import Client, logger
 from botpy.message import Message
@@ -79,7 +80,6 @@ class GuessSongHandler:
         self.current_song = await self.choice_song()
         self.alias_str = await get_alias_by_id(self.current_song["id"])
         cover_path = await self.get_cover()
-        logger.info("current_song: %s", self.current_song)
         print(cover_path)
         await self.send_message("请猜这首歌曲的名字！", msg_id, image=cover_path)
         await self.wait_for_guess()
@@ -147,14 +147,19 @@ class GuessSongHandler:
         提供不同的提示信息。
         """
         await asyncio.sleep(20)  # 每 5 秒检查一次
-        await self.provide_hint("genre or version or artist", msg_id=self.message.id)
-        await asyncio.sleep(20)  # 每 5 秒检查一次
+        if self.game_active:
+            await self.provide_hint(
+                "genre or version or artist", msg_id=self.message.id
+            )
+            await asyncio.sleep(20)  # 每 5 秒检查一次
 
-        await self.provide_hint("difficulty level", msg_id=self.message.id)
-        await asyncio.sleep(20)  # 每 5 秒检查一次
+        if self.game_active:
+            await self.provide_hint("difficulty level", msg_id=self.message.id)
+            await asyncio.sleep(20)  # 每 5 秒检查一次
 
-        await self.provide_hint("cover image", msg_id=self.message.id)
-        await asyncio.sleep(20)  # 每 5 秒检查一次
+        if self.game_active:
+            await self.provide_hint("cover image", msg_id=self.message.id)
+            await asyncio.sleep(20)  # 每 5 秒检查一次
 
         if self.game_active:
             await self.end_game()
