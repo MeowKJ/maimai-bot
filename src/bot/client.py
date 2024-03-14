@@ -7,7 +7,7 @@ from botpy import logger
 from botpy.message import Message, DirectMessage
 from src.database.database_manager import create_tables
 
-from src.bot.handler import command_handlers
+from src.bot.handler import command_handlers, default_hander
 
 
 class MyClient(botpy.Client):
@@ -35,17 +35,7 @@ class MyClient(botpy.Client):
                     )
                 break
         else:
-            # 默认帮助信息
-            msg = (
-                "帮助文档\n欢迎使用"
-                + self.robot.name
-                + "\n/bind + 用户名: 绑定水鱼查分器用户名 参数: 水鱼用户名\n"
-                "/b50 + 参数: 查询b50分数 参数: n:显示乐曲标题(可选)\n"
-                'Tips: 在聊天栏中输入 / 可快速唤起机器人，点击"/b50"可快速完成输入'
-            )
-            await message.reply(
-                content=f"@{message.author.username} {self.robot.name} {msg}"
-            )
+            await default_hander(self, message)
 
     async def on_direct_message_create(self, message: DirectMessage):
         """

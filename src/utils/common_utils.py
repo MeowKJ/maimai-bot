@@ -152,3 +152,42 @@ def get_img_code_from_dx_rating(dx_rating):
             return code
 
     return "10"
+
+
+versions = [
+    {id: 0, "title": "maimai", "version": 10000},
+    {id: 1, "title": "maimai PLUS", "version": 11000},
+    {id: 2, "title": "GreeN", "version": 12000},
+    {id: 3, "title": "GreeN PLUS", "version": 13000},
+    {id: 4, "title": "ORANGE", "version": 14000},
+    {id: 5, "title": "ORANGE PLUS", "version": 15000},
+    {id: 6, "title": "PiNK", "version": 16000},
+    {id: 7, "title": "PiNK PLUS", "version": 17000},
+    {id: 8, "title": "MURASAKi", "version": 18000},
+    {id: 9, "title": "MURASAKi PLUS", "version": 18500},
+    {id: 10, "title": "MiLK", "version": 19000},
+    {id: 11, "title": "MiLK PLUS", "version": 19500},
+    {id: 12, "title": "FiNALE", "version": 19900},
+    {id: 13, "title": "舞萌DX", "version": 20000},
+    {id: 15, "title": "舞萌DX 2021", "version": 21000},
+    {id: 17, "title": "舞萌DX 2022", "version": 22000},
+    {id: 19, "title": "舞萌DX 2023", "version": 23000},
+]
+
+
+def get_version_name(version_code):
+    """
+    利用上面定义的版本信息查找对应的版本范围，并返回相应的版本名称
+    """
+    # 确保版本列表是按版本号排序的
+    sorted_versions = sorted(versions, key=lambda x: x["version"])
+
+    for i, version in enumerate(sorted_versions):
+        # 如果是最后一个版本或版本号在当前和下一个版本之间
+        if (
+            i == len(sorted_versions) - 1
+            or version_code < sorted_versions[i + 1]["version"]
+        ):
+            return version["title"]
+
+    return "未知版本"  # 如果没有找到匹配的版本，返回未知版本

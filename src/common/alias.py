@@ -3,6 +3,7 @@ alias
 """
 
 import aiohttp
+from src.utils.app_config import config
 
 
 async def get_alias_by_id(song_id: int) -> str:
@@ -17,7 +18,7 @@ async def get_alias_by_id(song_id: int) -> str:
     """
     url = "https://maimai.lxns.net/api/v0/maimai/alias/list"
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
+        async with session.get(url, proxy=config.proxy) as resp:
 
             if resp.status != 200:
                 return

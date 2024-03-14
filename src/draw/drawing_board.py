@@ -26,7 +26,7 @@ class DrawingBoard:
         - main_img_path (str): The path to the main image file.
         - resize (tuple, optional): The target size to resize the main image. Defaults to None.
         """
-        self.asstes = Assets(config.base_url, config.static_config["assets_path"])
+        self.asstes = Assets.get_instance()
         self.font_path = config.static_config["font_path"]
         self.en_font = config.static_config["en_font"]
         self.jp_font = config.static_config["jp_font"]

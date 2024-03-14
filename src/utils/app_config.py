@@ -6,6 +6,7 @@ import sys
 import os
 import yaml
 from botpy import logger
+from src.assets_generator.get_assets import Assets
 
 
 class AppConfig:
@@ -23,6 +24,7 @@ class AppConfig:
     def __init__(self):
         self.base_url = ""
         self.heartbeat_url = ""
+        self.proxy = ""
         self.qmsg_key = None
         self.bot_config = None
         self.static_config = None
@@ -42,6 +44,7 @@ class AppConfig:
                 with open(config_path, "r", encoding="utf-8") as file:
                     conf = yaml.safe_load(file)
                     self.base_url = conf.get("base_url", "")
+                    self.proxy = conf.get("proxy", "")
                     self.heartbeat_url = conf.get("heartbeat_url", "")
                     self.bot_config = conf.get("bot_config", {})
                     self.static_config = conf.get("static_config", {})
@@ -108,3 +111,4 @@ def app_init(config_path="config.yaml"):
 # 创建配置实例
 config = AppConfig()
 app_init()
+Assets.get_instance(config.base_url, config.static_config["assets_path"], config.proxy)

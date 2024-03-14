@@ -5,11 +5,12 @@ handler.py 中的 command_handler 装饰器用于注册命令处理函数
 """
 
 from botpy.message import Message
-from botpy import logger
+from botpy import logger, Client
 from src.draw.generator import generate_b50
 from src.utils.qmsg import send_admin_message
 from src.database.database_manager import create_or_update_user_by_id_name
 from src.common.alias import get_alias_by_id
+from src.common.guess_song import GuessSongHandler
 
 command_handlers = {}
 
@@ -82,3 +83,32 @@ async def handle_alias_command(self, message: Message):
             return f"ID{message_text}的别名有:\n{out}"
         return f"没有找到ID为{message_text}的曲目别名"
     return f"{self.robot.name}:请后面输入曲目的ID查询别名哦"
+
+
+@command_handler("/曲绘猜歌")
+async def handle_guess_command(self: Client, message: Message):
+    """
+    b50
+    """
+    logger.debug("%s", self.robot.name)
+    get_raw_message(message.content).replace("/曲绘猜歌", "").strip()
+    guess_handler = GuessSongHandler(self, message)
+    await guess_handler.start_game(message.id)
+    return
+
+
+async def default_hander(self: Client, message: Message):
+    """
+    default_hander
+    """
+    guess_handler = GuessSongHandler(self, message)
+    await guess_handler.guess_song(get_raw_message(message.content), message.id)
+
+    msg = (
+        "帮助文档\n欢迎使用"
+        + self.robot.name
+        + "\n/bind + 用户名: 绑定水鱼查分器用户名 参数: 水鱼用户名\n"
+        "/b50 + 参数: 查询b50分数 参数: n:显示乐曲标题(可选)\n"
+        'Tips: 在聊天栏中输入 / 可快速唤起机器人，点击"/b50"可快速完成输入'
+    )
+    return f"@{message.author.username} {self.robot.name} {msg}"
