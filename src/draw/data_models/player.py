@@ -7,11 +7,11 @@ from .song import SongData
 
 class Player:
     def __init__(
-        self,
-        username,
-        guild_id,
-        avatar_url,
-        api_secret,
+            self,
+            username,
+            guild_id,
+            avatar_url,
+            api_secret,
     ):
         """
         Initializes a Player object.
@@ -46,9 +46,9 @@ class Player:
         Fetches data from Diving Fish.
         """
         async with aiohttp.request(
-            "POST",
-            "https://www.diving-fish.com/api/maimaidxprober/query/player",
-            json={"username": self.username, "b50": True},
+                "POST",
+                "https://www.diving-fish.com/api/maimaidxprober/query/player",
+                json={"username": self.username, "b50": True},
         ) as resp:
             if resp.status == 200:
                 obj = await resp.json()
@@ -77,9 +77,9 @@ class Player:
             "Authorization": self.api_secret,
         }
         async with aiohttp.request(
-            "GET",
-            base_api + "/api/v0/maimai/player/qq/" + str(self.username),
-            headers=auth_headers,
+                "GET",
+                base_api + "/api/v0/maimai/player/qq/" + str(self.username),
+                headers=auth_headers,
         ) as resp:
             if resp.status == 404:
                 return (
@@ -98,13 +98,12 @@ class Player:
                 )
             elif obj["code"] != 200:
                 return obj["code"], "暂时无法查询到您的b50"
-            print(obj)
             self.nickname = obj["data"].get("name")
             self.rating = obj["data"].get("rating")
             self.class_rank = obj["data"].get("class_rank")
             self.course_rank = obj["data"].get("course_rank")
             self.star = obj["data"].get("star")
-            self.avatar_url = obj["data"].get("icon_url")
+            self.avatar_url = "https://maimai.mpas.top/assets/avatar/" + str(obj["data"]["icon"].get("id"))
             friend_code = obj["data"].get("friend_code")
             self.name_plate = (
                 obj["data"]["name_plate"].get("id")
@@ -112,10 +111,26 @@ class Player:
                 else None
             )
 
+        songs_data = []
+
         async with aiohttp.request(
-            "GET",
-            base_api + "/api/v0/maimai/player/" + str(friend_code) + "/bests",
-            headers=auth_headers,
+                "GET",
+                base_api + "/api/v0/maimai/song/list",
+                headers=auth_headers
+        ) as resp:
+            if resp.status != 200:
+                return (
+                    resp.status,
+                    "maimai的查分机器人遇到了重大困难！！！"
+                )
+            obj = await resp.json()
+            songs_data = obj["songs"]
+            # print(songs_data)
+
+        async with aiohttp.request(
+                "GET",
+                base_api + "/api/v0/maimai/player/" + str(friend_code) + "/bests",
+                headers=auth_headers,
         ) as resp:
             if resp.status == 404:
                 return (
@@ -129,11 +144,22 @@ class Player:
                 return 403, "发现没有开启选项[允许读取谱面成绩]"
             elif obj["code"] != 200:
                 return obj["code"], "暂时无法查询到您的b50"
+
             for i in obj["data"]["standard"]:
+                if (songs_data):
+                    for song in songs_data:
+                        if song["id"] == i["id"]:
+                            # print(song["difficulties"][i["type"]][i["level_index"]])
+                            i["level"] = str(song["difficulties"][i["type"]][i["level_index"]]["level_value"])
+
                 song_data = SongData.from_data_luoxue(i)
                 self.song_data_b35.append(song_data)
 
             for i in obj["data"]["dx"]:
+                if (songs_data):
+                    for song in songs_data:
+                        if song["id"] == i["id"]:
+                            i["level"] = str(song["difficulties"][i["type"]][i["level_index"]]["level_value"])
                 song_data = SongData.from_data_luoxue(i)
                 self.song_data_b15.append(song_data)
 

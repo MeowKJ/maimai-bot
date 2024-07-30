@@ -97,9 +97,9 @@ async def handle_guess_command(self: Client, message: Message):
     return
 
 
-async def default_hander(self: Client, message: Message):
+async def default_handler(self: Client, message: Message):
     """
-    default_hander
+    default_handler
     """
     guess_handler = GuessSongHandler(self, message)
     await guess_handler.guess_song(get_raw_message(message.content), message.id)

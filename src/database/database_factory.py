@@ -11,7 +11,6 @@ class DatabaseFactory:
             echo=False,
             pool_size=20,  # 根据需要调整
             max_overflow=10,  # 新增参数
-            poolclass=QueuePool,  # 显式指定连接池类型
         )
 
         self.AsyncSessionLocal = sessionmaker(

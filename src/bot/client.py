@@ -7,7 +7,7 @@ from botpy import logger
 from botpy.message import Message, DirectMessage
 from src.database.database_manager import create_tables
 
-from src.bot.handler import command_handlers, default_hander
+from src.bot.handler import command_handlers, default_handler
 
 
 class MyClient(botpy.Client):
@@ -35,7 +35,7 @@ class MyClient(botpy.Client):
                     )
                 break
         else:
-            await default_hander(self, message)
+            await default_handler(self, message)
 
     async def on_direct_message_create(self, message: DirectMessage):
         """

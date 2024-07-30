@@ -83,7 +83,7 @@ class Assets:
         从URL下载文件
         """
         logger.info("下载文件：%s", url)
-        async with aiohttp.ClientSession(conn_timeout=5) as session:
+        async with aiohttp.ClientSession(conn_timeout=60) as session:
             async with session.get(url, proxy=proxy) as response:
                 if response.status != 200:
                     logger.warning("下载文件失败：%s", url)
