@@ -121,7 +121,7 @@ class Player:
             if resp.status != 200:
                 return (
                     resp.status,
-                    "maimai的查分机器人遇到了重大困难！！！"
+                    "maimai的查分机器人遇到了重大困难!!!"
                 )
             obj = await resp.json()
             songs_data = obj["songs"]
@@ -144,24 +144,19 @@ class Player:
                 return 403, "发现没有开启选项[允许读取谱面成绩]"
             elif obj["code"] != 200:
                 return obj["code"], "暂时无法查询到您的b50"
+            
+            def update_level_and_append(song_list, target_list):
+                for i in song_list:
+                    if songs_data:
+                        matching_song = next((song for song in songs_data if song["id"] == i["id"]), None)
+                        if matching_song:
+                            i["level"] = f'{matching_song["difficulties"][i["type"]][i["level_index"]]["level_value"]:.1f}'
 
-            for i in obj["data"]["standard"]:
-                if (songs_data):
-                    for song in songs_data:
-                        if song["id"] == i["id"]:
-                            # print(song["difficulties"][i["type"]][i["level_index"]])
-                            i["level"] = str(song["difficulties"][i["type"]][i["level_index"]]["level_value"])
+                    song_data = SongData.from_data_luoxue(i)
+                    target_list.append(song_data)
 
-                song_data = SongData.from_data_luoxue(i)
-                self.song_data_b35.append(song_data)
-
-            for i in obj["data"]["dx"]:
-                if (songs_data):
-                    for song in songs_data:
-                        if song["id"] == i["id"]:
-                            i["level"] = str(song["difficulties"][i["type"]][i["level_index"]]["level_value"])
-                song_data = SongData.from_data_luoxue(i)
-                self.song_data_b15.append(song_data)
+            update_level_and_append(obj["data"]["standard"], self.song_data_b35)
+            update_level_and_append(obj["data"]["dx"], self.song_data_b15)
 
             self.song_data_b15_total = obj["data"]["dx_total"]
             self.song_data_b35_total = obj["data"]["standard_total"]
