@@ -52,6 +52,11 @@ class AppConfig:
                     self.qmsg_key = conf.get("qmsg_key", "")
                     self.debug = conf.get("debug", False)
                     self.loaded = True
+
+                    # 通过环境变量初始化认证信息
+                    os.environ["QIANFAN_ACCESS_KEY"] = conf.get("iam_ak")
+                    os.environ["QIANFAN_SECRET_KEY"] = conf.get("iam_sk")
+
             except FileNotFoundError as e:
                 print(f"Error loading config: {e}")
             except yaml.YAMLError as e:

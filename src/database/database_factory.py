@@ -1,16 +1,13 @@
-# database_factory.py
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import QueuePool
-
 
 class DatabaseFactory:
     def __init__(self, config):
+        # Update to use SQLite for a local database
         self.engine = create_async_engine(
-            config.database_url,
+            "sqlite+aiosqlite:///local_db.sqlite",  # Path to your local SQLite file
             echo=False,
-            pool_size=20,  # 根据需要调整
-            max_overflow=10,  # 新增参数
+            # Removed pool_size and max_overflow, as they're not valid for aiosqlite
         )
 
         self.AsyncSessionLocal = sessionmaker(

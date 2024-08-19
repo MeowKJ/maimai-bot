@@ -36,7 +36,6 @@ async def create_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-
 @retry_async(retries=3, delay=2, exceptions=(OperationalError,))
 async def get_name_score_by_id(user_id: str):
     encoded_id = Base62Encoder.encode_number(user_id)
