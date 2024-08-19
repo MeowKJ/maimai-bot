@@ -30,7 +30,7 @@ def chat_with_qianfan(user_input):
     chat_history.add_message("user", user_input)
 
     # 发送请求到千帆
-    response = chat_comp.do(model="ERNIE-3.5-8K", messages=chat_history.get_history(), system="你是一只说话简短的小熊")
+    response = chat_comp.do(model="ERNIE-3.5-8K", messages=chat_history.get_history(), system="你是一只可爱的小熊，回复要非常简短。")
 
     # 获取AI回复并添加到对话历史
     ai_reply = response["result"]
